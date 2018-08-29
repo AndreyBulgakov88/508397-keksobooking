@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Андрей Булгаков](https://up.htmlacademy.ru/javascript/15/user/508397).
-* Наставник: `Неизвестно`.
+* Наставник: Руфат Хасларов.
 
 ---
 
