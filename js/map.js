@@ -41,22 +41,22 @@ var getRandomItemFromArray = function (array) {
   return array[getRandomNumber(0, array.length - 1)];
 };
 
-var getRandomValuesFromArray = function (array, valuesCount) {
-  var resultArray = shuffleArray(array);
+var getRandomValuesFromArray = function (initialArray, valuesCount) {
+  var resultArray = shuffleArray(initialArray);
 
   return resultArray.slice(0, valuesCount);
 };
 
 function shuffleArray(initialArray) {
-  var array = initialArray.slice();
-  for (var i = 0; i < array.length; i++) {
+  var resultArray = initialArray.slice();
+  for (var i = 0; i < resultArray.length; i++) {
     var j = Math.floor(Math.random() * (i + 1));
-    var tmp = array[i];
-    array[i] = array[j];
-    array[j] = tmp;
+    var tmp = resultArray[i];
+    resultArray[i] = resultArray[j];
+    resultArray[j] = tmp;
   }
 
-  return array;
+  return resultArray;
 }
 
 var generateAdvertisements = function () {
