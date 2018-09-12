@@ -10,6 +10,11 @@ var HOTEL_TITLES = [
   'Уютное бунгало далеко от моря',
   'Неуютное бунгало по колено в воде'];
 var HOTEL_TYPES = ['palace', 'flat', 'house', 'bungalo'];
+var HOTEL_TYPES_DICTIONARY = {
+  'palace': 'Дворец',
+  'flat': 'Квартира',
+  'house': 'Дом',
+  'bungalo': 'Бунгало'};
 var HOTEL_FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var HOTEL_PHOTOS = [
   'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
@@ -36,13 +41,22 @@ var getRandomItemFromArray = function (array) {
   return array[getRandomNumber(0, array.length - 1)];
 };
 
-function shuffleArray(array) {
+var getRandomValuesFromArray = function (array, valuesCount) {
+  var resultArray = shuffleArray(array);
+
+  return resultArray.slice(0, valuesCount);
+};
+
+function shuffleArray(initialArray) {
+  var array = initialArray.slice();
   for (var i = 0; i < array.length; i++) {
     var j = Math.floor(Math.random() * (i + 1));
     var tmp = array[i];
     array[i] = array[j];
     array[j] = tmp;
   }
+
+  return array;
 }
 
 var generateAdvertisements = function () {
@@ -75,6 +89,13 @@ var generateAdvertisementLocation = function () {
   return location;
 };
 
+var generateHotelFeatures = function () {
+  var featuresCount = getRandomNumber(0, HOTEL_FEATURES.length);
+  var features = getRandomValuesFromArray(HOTEL_FEATURES, featuresCount);
+
+  return features;
+};
+
 var generateAdvertisementOffer = function (advertisementNumber, advertisementLocation) {
   var offer = {};
 
@@ -88,25 +109,9 @@ var generateAdvertisementOffer = function (advertisementNumber, advertisementLoc
   offer.checkout = getRandomItemFromArray(CHECKOUT_TIMES);
   offer.features = generateHotelFeatures();
   offer.description = '';
-
-  offer.photos = HOTEL_PHOTOS.slice();
-  shuffleArray(offer.photos);
+  offer.photos = shuffleArray(HOTEL_PHOTOS);
 
   return offer;
-};
-
-var generateHotelFeatures = function () {
-  var features = [];
-  var featuresCount = getRandomNumber(0, HOTEL_FEATURES.length);
-  var featuresTempArray = HOTEL_FEATURES.slice();
-  shuffleArray(featuresTempArray);
-  featuresTempArray = featuresTempArray.slice(0, featuresCount);
-
-  featuresTempArray.forEach(function (element) {
-    features.push(element);
-  });
-
-  return features;
 };
 
 var renderArrayToChildNodes = function (features, callback) {
@@ -154,16 +159,6 @@ var removeChildNodes = function (parentNode) {
   }
 };
 
-var formatOfferType = function (advertisement) {
-  switch (advertisement.offer.type) {
-    case 'flat': return 'Квартира';
-    case 'bungalo': return 'Бунгало';
-    case 'house': return 'Дом';
-    case 'palace': return 'Дворец';
-    default: return '';
-  }
-};
-
 var renderCard = function (advertisement) {
   var cardElement = cardTemplate.cloneNode(true);
 
@@ -171,7 +166,7 @@ var renderCard = function (advertisement) {
   cardElement.querySelector('.popup__title').textContent = advertisement.offer.title;
   cardElement.querySelector('.popup__text--address').textContent = advertisement.offer.address;
   cardElement.querySelector('.popup__text--price').textContent = advertisement.offer.price + '₽/ночь';
-  cardElement.querySelector('.popup__type').textContent = formatOfferType(advertisement);
+  cardElement.querySelector('.popup__type').textContent = HOTEL_TYPES_DICTIONARY[advertisement.offer.type];
   cardElement.querySelector('.popup__text--capacity').textContent = advertisement.offer.rooms + ' комнаты для ' + advertisement.offer.guests + ' гостей';
   cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + advertisement.offer.checkin + ', выезд до ' + advertisement.offer.checkout;
 
