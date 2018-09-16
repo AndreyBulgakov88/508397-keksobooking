@@ -15,6 +15,16 @@ var HOTEL_TYPES_DICTIONARY = {
   'flat': 'Квартира',
   'house': 'Дом',
   'bungalo': 'Бунгало'};
+var HOTEL_TYPES_MIN_PRICE = {
+  'bungalo': '0',
+  'flat': '1000',
+  'house': '5000',
+  'palace': '10000'};
+var HOTEL_ROOM_NUMBER_CAPACITY = {
+  '1': ['1'],
+  '2': ['1', '2'],
+  '3': ['1', '2', '3'],
+  '100': ['0']};
 var HOTEL_FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var HOTEL_PHOTOS = [
   'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
@@ -294,7 +304,76 @@ var openAdvertisementPopup = function (advertisement) {
 };
 
 
-// advertisements setup
+// setup functions
+
+/** @description links hotel type and price form fields for restrict a price range
+  */
+var linkHotelTypeAndPriceFormFields = function () {
+  var typeSelect = document.querySelector('#type');
+  var priceInput = document.querySelector('#price');
+
+  typeSelect.addEventListener('change', function () {
+    var minPrice = HOTEL_TYPES_MIN_PRICE[typeSelect.value];
+    priceInput.placeholder = minPrice;
+    priceInput.min = minPrice;
+  });
+
+  priceInput.addEventListener('invalid', function () {
+    if (priceInput.validity.rangeUnderflow) {
+      priceInput.setCustomValidity('Для типа жилья ' + HOTEL_TYPES_DICTIONARY[typeSelect.value] + ' минимальная цена ' + HOTEL_TYPES_MIN_PRICE[typeSelect.value]);
+    } else if (priceInput.validity.rangeOverflow) {
+      priceInput.setCustomValidity('Максимально возможная цена 1 000 000');
+    } else {
+      priceInput.setCustomValidity('');
+    }
+  });
+};
+
+/** @description timein and timeout form fields synchronizes if the user changes any of them
+  */
+var synchronizeCheckinAndCheckoutFormFields = function () {
+  var timeinSelect = document.querySelector('#timein');
+  var timeoutSelect = document.querySelector('#timeout');
+
+  timeinSelect.addEventListener('change', function () {
+    timeoutSelect.value = timeinSelect.value;
+  });
+
+  timeoutSelect.addEventListener('change', function () {
+    timeinSelect.value = timeoutSelect.value;
+  });
+};
+
+/** @description available capacity form field options synchronizes with the room number form field
+  */
+var synchronizeRoomNumberAndCapacityFormFields = function () {
+  var roomNumberSelect = document.querySelector('#room_number');
+  var capacitySelect = document.querySelector('#capacity');
+
+  roomNumberSelect.addEventListener('change', function () {
+    var capacity = HOTEL_ROOM_NUMBER_CAPACITY[roomNumberSelect.value];
+
+    for (var i = 0; i < capacitySelect.options.length; i++) {
+      capacitySelect.options[i].disabled = false;
+
+      if (capacity.indexOf(capacitySelect.options[i].value) === -1) {
+        capacitySelect.options[i].disabled = true;
+      }
+    }
+
+    if (capacity.indexOf(capacitySelect.value) === -1) {
+      capacitySelect.value = null;
+    }
+  });
+};
+
+/** @description restricting input for advertisement form fields
+  */
+var setupAdvertisementFormInputRestrictions = function () {
+  linkHotelTypeAndPriceFormFields();
+  synchronizeCheckinAndCheckoutFormFields();
+  synchronizeRoomNumberAndCapacityFormFields();
+};
 
 /** @description creating advertisements and adding listeners to advertisements
   */
@@ -364,12 +443,14 @@ var mapPinMainMouseUpHandler = function () {
   mapSection.classList.remove('map--faded');
   advertisementForm.classList.remove('ad-form--disabled');
 
-  var disabledElements = document.querySelectorAll('[disabled]');
+  var disabledElements = document.querySelectorAll('[disabled]:not(option)');
   disabledElements.forEach(function (element) {
     element.disabled = false;
   });
 
   configureAdvertisements();
+
+  setupAdvertisementFormInputRestrictions();
 
   getPinMainLocation(true);
 
@@ -383,7 +464,7 @@ var mapPinMainMouseUpHandler = function () {
   * @param {boolean} arrowActive the indicator of main pin arrow activity.
   */
 var getPinMainLocation = function (arrowActive) {
-  var addressInput = document.querySelector('input[name=address]');
+  var addressInput = document.querySelector('#address');
 
   var locationX = parseInt(mapPinMain.style.left, 10) + PIN_MAIN_WIDTH / 2;
   var locationY = parseInt(mapPinMain.style.top, 10) + PIN_MAIN_HEIGHT / 2;
