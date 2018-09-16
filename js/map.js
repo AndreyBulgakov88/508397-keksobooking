@@ -35,31 +35,43 @@ var PIN_MAIN_HEIGHT = 62;
 var PIN_MAIN_ARROW_HEIGHT = 22;
 
 var mapSection = document.querySelector('.map');
-var mapPins = document.querySelector('.map__pins');
 var mapPinMain = document.querySelector('.map__pin--main');
-
-var advertisementForm = document.querySelector('.ad-form');
-var addressInput = document.querySelector('input[name=address]');
-
-var pinTemplate = document.querySelector('#pin').content;
-var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
 
 
 // functions for working with numbers and arrays
+
+/** @description returns a random value from the range.
+  * @param {number} minValue the minimum value of the range.
+  * @param {number} maxValue the maximum value of the range.
+  * @return {number}
+  */
 var getRandomNumber = function (minValue, maxValue) {
   return Math.floor((maxValue + 1 - minValue) * Math.random() + minValue);
 };
 
+/** @description returns a random item from the arbitrary array.
+  * @param {array} array
+  * @return {any}
+  */
 var getRandomItemFromArray = function (array) {
   return array[getRandomNumber(0, array.length - 1)];
 };
 
+/** @description returns a random array of the definite length from initial array items.
+  * @param {array} initialArray
+  *  @param {number} valuesCount the result array length.
+  * @return {array}
+  */
 var getRandomValuesFromArray = function (initialArray, valuesCount) {
   var resultArray = shuffleArray(initialArray);
 
   return resultArray.slice(0, valuesCount);
 };
 
+/** @description returns a random array of the same length from initial array items.
+  * @param {array} initialArray
+  * @return {array}
+  */
 function shuffleArray(initialArray) {
   var resultArray = initialArray.slice();
   for (var i = 0; i < resultArray.length; i++) {
@@ -73,15 +85,23 @@ function shuffleArray(initialArray) {
 }
 
 
-// functions for generating advertisements
-var generateAdvertisementAutor = function (advertisementNumber) {
+// functions for creating advertisements
+
+/** @description creates an autor object for the advertisement.
+  * @param {number} advertisementId
+  * @return {object}
+  */
+var createAdvertisementAutor = function (advertisementId) {
   var author = {};
-  author.avatar = 'img/avatars/user0' + advertisementNumber + '.png';
+  author.avatar = 'img/avatars/user0' + advertisementId + '.png';
 
   return author;
 };
 
-var generateAdvertisementLocation = function () {
+/** @description creates a location object for the advertisement.
+  * @return {object}
+  */
+var createAdvertisementLocation = function () {
   var location = {};
   location.x = getRandomNumber(0, MAP_WIDTH);
   location.y = getRandomNumber(130, 630);
@@ -89,10 +109,25 @@ var generateAdvertisementLocation = function () {
   return location;
 };
 
-var generateAdvertisementOffer = function (advertisementNumber, advertisementLocation) {
+/** @description creates features array for advertisement offer.
+  * @return {array}
+  */
+var createHotelFeatures = function () {
+  var featuresCount = getRandomNumber(0, HOTEL_FEATURES.length);
+  var features = getRandomValuesFromArray(HOTEL_FEATURES, featuresCount);
+
+  return features;
+};
+
+/** @description creates an offer object for the advertisement.
+  * @param {number} advertisementId
+  * @param {object} advertisementLocation the location object of the advertisement.
+  * @return {object}
+  */
+var createAdvertisementOffer = function (advertisementId, advertisementLocation) {
   var offer = {};
 
-  offer.title = HOTEL_TITLES[advertisementNumber];
+  offer.title = HOTEL_TITLES[advertisementId];
   offer.address = advertisementLocation.x + ', ' + advertisementLocation.y;
   offer.price = getRandomNumber(1000, 1000000);
   offer.type = getRandomItemFromArray(HOTEL_TYPES);
@@ -100,28 +135,24 @@ var generateAdvertisementOffer = function (advertisementNumber, advertisementLoc
   offer.guests = getRandomNumber(1, 15);
   offer.checkin = getRandomItemFromArray(CHECKIN_TIMES);
   offer.checkout = getRandomItemFromArray(CHECKOUT_TIMES);
-  offer.features = generateHotelFeatures();
+  offer.features = createHotelFeatures();
   offer.description = '';
   offer.photos = shuffleArray(HOTEL_PHOTOS);
 
   return offer;
 };
 
-var generateHotelFeatures = function () {
-  var featuresCount = getRandomNumber(0, HOTEL_FEATURES.length);
-  var features = getRandomValuesFromArray(HOTEL_FEATURES, featuresCount);
-
-  return features;
-};
-
-var generateAdvertisements = function () {
+/** @description creates an array of advertisement objects
+  * @return {array}
+  */
+var createAdvertisements = function () {
   var advertisementsArray = [];
 
   for (var i = 0; i < ADVERTISEMENTS_COUNT; i++) {
     var advertisement = {};
-    advertisement.author = generateAdvertisementAutor(i + 1);
-    advertisement.location = generateAdvertisementLocation();
-    advertisement.offer = generateAdvertisementOffer(i + 1, advertisement.location);
+    advertisement.author = createAdvertisementAutor(i + 1);
+    advertisement.location = createAdvertisementLocation();
+    advertisement.offer = createAdvertisementOffer(i + 1, advertisement.location);
 
     advertisementsArray.push(advertisement);
   }
@@ -131,6 +162,12 @@ var generateAdvertisements = function () {
 
 
 // functions for working with child nodes
+
+/** @description returns a document fragment with child nodes rendered from the array using the callback function
+  * @param {array} array
+  * @param {function} callback
+  * @return {array}
+  */
 var renderArrayToChildNodes = function (array, callback) {
   var fragment = document.createDocumentFragment();
   array.forEach(function (element, index) {
@@ -140,6 +177,9 @@ var renderArrayToChildNodes = function (array, callback) {
   return fragment;
 };
 
+/** @description removes all child nodes from the parent node
+  * @param {Node} parentNode
+  */
 var removeChildNodes = function (parentNode) {
   while (parentNode.lastChild) {
     parentNode.removeChild(parentNode.lastChild);
@@ -148,40 +188,67 @@ var removeChildNodes = function (parentNode) {
 
 
 // functions for rendering elements
-var renderPin = function (advertisement, index) {
+
+/** @description returns a pin node rendered from the advertisement
+  * @param {object} advertisement
+  * @param {number} advertisementId
+  * @return {Node}
+  */
+var renderPin = function (advertisement, advertisementId) {
+  var pinTemplate = document.querySelector('#pin').content;
   var pinElement = pinTemplate.cloneNode(true);
 
   pinElement.querySelector('.map__pin').style.left = advertisement.location.x - PIN_WIDTH / 2 + 'px';
   pinElement.querySelector('.map__pin').style.top = advertisement.location.y - PIN_HEIGHT + 'px';
   pinElement.querySelector('.map__pin').children[0].src = advertisement.author.avatar;
   pinElement.querySelector('.map__pin').children[0].alt = advertisement.offer.title;
-  pinElement.querySelector('.map__pin').setAttribute('data-id', index);
+  pinElement.querySelector('.map__pin').setAttribute('data-id', advertisementId);
 
   return pinElement;
 };
 
-var makeFeatureElement = function (feature) {
+/** @description creates and returns a single offer feature DOMElement
+  * @param {string} featureName
+  * @return {Node}
+  */
+var makeFeatureElement = function (featureName) {
   var featureElement = document.createElement('li');
   featureElement.classList.add('popup__feature');
-  featureElement.classList.add('popup__feature--' + feature);
+  featureElement.classList.add('popup__feature--' + featureName);
 
   return featureElement;
 };
 
-var makePhotoElement = function (photo) {
+/** @description creates and returns a single offer photo DOMElement
+  * @param {string} photoPath
+  * @return {Node}
+  */
+var makePhotoElement = function (photoPath) {
   var photoElement = document.createElement('img');
   photoElement.classList.add('popup__photo');
   photoElement.width = 45;
   photoElement.height = 40;
-  photoElement.src = photo;
+  photoElement.src = photoPath;
   photoElement.alt = 'Фотография жилья';
 
   return photoElement;
 };
 
-var renderCard = function (advertisement) {
+/** @description creates an empty offer card DOMElement
+  */
+var makeEmptyCardElement = function () {
+  var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
   var cardElement = cardTemplate.cloneNode(true);
+  mapSection.insertBefore(cardElement, document.querySelector('.map__filters-container'));
+  cardElement.classList.add('hidden');
+};
 
+/** @description rendering the advertisement into the offer card DOMElement
+  * @param {object} advertisement
+  * @return {Node}
+  */
+var renderCard = function (advertisement) {
+  var cardElement = document.querySelector('.map__card');
   cardElement.querySelector('.popup__avatar').src = advertisement.author.avatar;
   cardElement.querySelector('.popup__title').textContent = advertisement.offer.title;
   cardElement.querySelector('.popup__text--address').textContent = advertisement.offer.address;
@@ -204,7 +271,12 @@ var renderCard = function (advertisement) {
 };
 
 
-// functions for working with advertisements popup
+// functions for working with the advertisement popup
+
+/** @description returns a data-id attribute from pin DOM element
+  * @param {Node} element the pin DOM element.
+  * @return {number}
+  */
 var getAdvertisementId = function (element) {
   if (!element.classList.contains('map__pin')) {
     return element.parentNode.getAttribute('data-id');
@@ -213,41 +285,32 @@ var getAdvertisementId = function (element) {
   }
 };
 
+/** @description returns a data-id attribute from pin DOM element
+  * @param {object} advertisement
+  */
 var openAdvertisementPopup = function (advertisement) {
-  var currentAdvertisement = document.querySelector('.popup');
-
-  if (!currentAdvertisement) {
-    currentAdvertisement = renderCard(advertisement);
-    mapSection.insertBefore(currentAdvertisement, document.querySelector('.map__filters-container'));
-  } else {
-    var newAdvertisement = renderCard(advertisement);
-    mapSection.replaceChild(newAdvertisement, currentAdvertisement);
-    currentAdvertisement = newAdvertisement;
-  }
-};
-
-var thisIsPin = function (element) {
-  if ((!element.classList.contains('map__pin') && !element.parentNode.classList.contains('map__pin'))
-       || element.classList.contains('map__pin--main')
-       || element.parentNode.classList.contains('map__pin--main')) {
-    return false;
-  }
-
-  return true;
+  var cardElement = renderCard(advertisement);
+  cardElement.classList.remove('hidden');
 };
 
 
-// generating advertisements, adding listeners to advertisements
+// advertisements setup
+
+/** @description creating advertisements and adding listeners to advertisements
+  */
 var configureAdvertisements = function () {
-  var advertisementsArray = generateAdvertisements();
+  var mapPins = document.querySelector('.map__pins');
+
+  var advertisementsArray = createAdvertisements();
   mapPins.appendChild(renderArrayToChildNodes(advertisementsArray, renderPin));
 
   mapPins.addEventListener('click', function (evt) {
-    if (!thisIsPin(evt.target)) {
+    var advertisementId = getAdvertisementId(evt.target);
+    if (!advertisementId) {
       return;
     }
 
-    openAdvertisementPopup(advertisementsArray[getAdvertisementId(evt.target)]);
+    openAdvertisementPopup(advertisementsArray[advertisementId]);
 
     addPopupCloseListeners();
   });
@@ -255,17 +318,26 @@ var configureAdvertisements = function () {
 
 
 // popup handlers
+
+/** @description a handler for the escape-pressing event when the popup window is open
+  * @param {Event} evt
+  */
 var popupEscPressHandler = function (evt) {
   if (evt.keyCode === ESC_KEYCODE) {
     closePopup();
   }
 };
 
+/** @description closing the popup and removes the escape-pressing listener from the document
+  */
 var closePopup = function () {
-  mapSection.removeChild(document.querySelector('.popup'));
+  var cardElement = document.querySelector('.map__card');
+  cardElement.classList.add('hidden');
   document.removeEventListener('keydown', popupEscPressHandler);
 };
 
+/** @description adding keydown and click listeners when the popup window is open
+  */
 var addPopupCloseListeners = function () {
   document.addEventListener('keydown', popupEscPressHandler);
 
@@ -283,7 +355,12 @@ var addPopupCloseListeners = function () {
 
 
 // page activation handler
+
+/** @description a handler for page activation by clicking on main pin
+  */
 var mapPinMainMouseUpHandler = function () {
+  var advertisementForm = document.querySelector('.ad-form');
+
   mapSection.classList.remove('map--faded');
   advertisementForm.classList.remove('ad-form--disabled');
 
@@ -294,14 +371,20 @@ var mapPinMainMouseUpHandler = function () {
 
   configureAdvertisements();
 
-  addressInput.value = getPinMainLocation(true);
+  getPinMainLocation(true);
 
   mapPinMain.removeEventListener('mouseup', mapPinMainMouseUpHandler);
 };
 
 
-// getting main pin location
+// getting a main pin location
+
+/** @description getting a main pin location and putting it into the address input
+  * @param {boolean} arrowActive the indicator of main pin arrow activity.
+  */
 var getPinMainLocation = function (arrowActive) {
+  var addressInput = document.querySelector('input[name=address]');
+
   var locationX = parseInt(mapPinMain.style.left, 10) + PIN_MAIN_WIDTH / 2;
   var locationY = parseInt(mapPinMain.style.top, 10) + PIN_MAIN_HEIGHT / 2;
 
@@ -309,10 +392,11 @@ var getPinMainLocation = function (arrowActive) {
     locationY = locationY + PIN_MAIN_HEIGHT / 2 + PIN_MAIN_ARROW_HEIGHT;
   }
 
-  return locationX + ', ' + locationY;
+  addressInput.value = locationX + ', ' + locationY;
 };
 
 
 // initial settings
-addressInput.value = getPinMainLocation();
+getPinMainLocation();
+makeEmptyCardElement();
 mapPinMain.addEventListener('mouseup', mapPinMainMouseUpHandler);
