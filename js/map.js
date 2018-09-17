@@ -9,22 +9,23 @@ var HOTEL_TITLES = [
   'Некрасивый негостеприимный домик',
   'Уютное бунгало далеко от моря',
   'Неуютное бунгало по колено в воде'];
-var HOTEL_TYPES = ['palace', 'flat', 'house', 'bungalo'];
+var HOTEL_TYPES = ['bungalo', 'flat', 'house', 'palace'];
+var HOTEL_TYPES_MIN_PRICE = ['0', '1000', '5000', '10000'];
 var HOTEL_TYPES_DICTIONARY = {
-  'palace': 'Дворец',
+  'bungalo': 'Бунгало',
   'flat': 'Квартира',
   'house': 'Дом',
-  'bungalo': 'Бунгало'};
-var HOTEL_TYPES_MIN_PRICE = {
-  'bungalo': '0',
-  'flat': '1000',
-  'house': '5000',
-  'palace': '10000'};
+  'palace': 'Дворец'};
 var HOTEL_ROOM_NUMBER_CAPACITY = {
   '1': ['1'],
   '2': ['1', '2'],
   '3': ['1', '2', '3'],
   '100': ['0']};
+var HOTEL_ROOM_NUMBER_CAPACITY_DICTIONARY = {
+  '1': ['для одного гостя'],
+  '2': ['для одного гостя', ' для двух гостей'],
+  '3': ['для одного гостя', ' для двух гостей', ' для трех гостей'],
+  '100': ['не для гостей']};
 var HOTEL_FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var HOTEL_PHOTOS = [
   'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
@@ -47,6 +48,8 @@ var PIN_MAIN_ARROW_HEIGHT = 22;
 var mapSection = document.querySelector('.map');
 var mapPinMain = document.querySelector('.map__pin--main');
 
+var roomNumberSelect = document.querySelector('#room_number');
+var capacitySelect = document.querySelector('#capacity');
 
 // functions for working with numbers and arrays
 
@@ -306,21 +309,43 @@ var openAdvertisementPopup = function (advertisement) {
 
 // setup functions
 
-/** @description links hotel type and price form fields for restrict a price range
+/** @description a common function for synchronizing any two of form controls using the callback function
+  * @param {Node} firstControl
+  * @param {Node} secondControl
+  * @param {any} firstOptions first control options
+  * @param {any} secondOptions second control options
+  * @param {string} eventType event type for listeners
+  * @param {array} syncAttributes the array of attributes to put synchronized value
+  * @param {Function} callback
   */
-var linkHotelTypeAndPriceFormFields = function () {
+var syncFormControls = function (firstControl, secondControl, firstOptions, secondOptions, eventType, syncAttributes, callback) {
+  firstControl.addEventListener(eventType, function (evt) {
+    callback(secondControl, secondOptions[firstOptions.indexOf(evt.target.value)], syncAttributes);
+  });
+};
+
+/** @description a callback function for synchronizing any two of form controls
+  * @param {Node} formControl synchronized form control
+  * @param {any} value value from other form control to synchronize given form control
+  * @param {array} syncAttributes the array of attributes to put synchronized value
+  */
+var syncFormControlValues = function (formControl, value, syncAttributes) {
+  syncAttributes.forEach(function (element) {
+    formControl[element] = value;
+  });
+};
+
+/** @description synchronizes the hotel type form control and min.price in the price form control
+  */
+var syncHotelTypeAndPriceFormControls = function () {
   var typeSelect = document.querySelector('#type');
   var priceInput = document.querySelector('#price');
 
-  typeSelect.addEventListener('change', function () {
-    var minPrice = HOTEL_TYPES_MIN_PRICE[typeSelect.value];
-    priceInput.placeholder = minPrice;
-    priceInput.min = minPrice;
-  });
+  syncFormControls(typeSelect, priceInput, HOTEL_TYPES, HOTEL_TYPES_MIN_PRICE, 'change', ['min', 'placeholder'], syncFormControlValues);
 
-  priceInput.addEventListener('invalid', function () {
+  priceInput.addEventListener('change', function () {
     if (priceInput.validity.rangeUnderflow) {
-      priceInput.setCustomValidity('Для типа жилья ' + HOTEL_TYPES_DICTIONARY[typeSelect.value] + ' минимальная цена ' + HOTEL_TYPES_MIN_PRICE[typeSelect.value]);
+      priceInput.setCustomValidity('Для типа жилья ' + HOTEL_TYPES_DICTIONARY[typeSelect.value] + ' минимальная цена ' + HOTEL_TYPES_MIN_PRICE[HOTEL_TYPES.indexOf(typeSelect.value)]);
     } else if (priceInput.validity.rangeOverflow) {
       priceInput.setCustomValidity('Максимально возможная цена 1 000 000');
     } else {
@@ -329,50 +354,35 @@ var linkHotelTypeAndPriceFormFields = function () {
   });
 };
 
-/** @description timein and timeout form fields synchronizes if the user changes any of them
+/** @description available capacity form control options synchronizes with the room number form control
   */
-var synchronizeCheckinAndCheckoutFormFields = function () {
-  var timeinSelect = document.querySelector('#timein');
-  var timeoutSelect = document.querySelector('#timeout');
-
-  timeinSelect.addEventListener('change', function () {
-    timeoutSelect.value = timeinSelect.value;
-  });
-
-  timeoutSelect.addEventListener('change', function () {
-    timeinSelect.value = timeoutSelect.value;
-  });
-};
-
-/** @description available capacity form field options synchronizes with the room number form field
-  */
-var synchronizeRoomNumberAndCapacityFormFields = function () {
-  var roomNumberSelect = document.querySelector('#room_number');
-  var capacitySelect = document.querySelector('#capacity');
-
-  roomNumberSelect.addEventListener('change', function () {
-    var capacity = HOTEL_ROOM_NUMBER_CAPACITY[roomNumberSelect.value];
-
-    for (var i = 0; i < capacitySelect.options.length; i++) {
-      capacitySelect.options[i].disabled = false;
-
-      if (capacity.indexOf(capacitySelect.options[i].value) === -1) {
-        capacitySelect.options[i].disabled = true;
-      }
-    }
-
-    if (capacity.indexOf(capacitySelect.value) === -1) {
-      capacitySelect.value = null;
-    }
-  });
+var setCapacityFormControlCustomValidity = function () {
+  var capacity = HOTEL_ROOM_NUMBER_CAPACITY[roomNumberSelect.value];
+  if (capacity.indexOf(capacitySelect.value) === -1) {
+    capacitySelect.setCustomValidity('Доступно только ' + HOTEL_ROOM_NUMBER_CAPACITY_DICTIONARY[roomNumberSelect.value]);
+  } else {
+    capacitySelect.setCustomValidity('');
+  }
 };
 
 /** @description restricting input for advertisement form fields
   */
 var setupAdvertisementFormInputRestrictions = function () {
-  linkHotelTypeAndPriceFormFields();
-  synchronizeCheckinAndCheckoutFormFields();
-  synchronizeRoomNumberAndCapacityFormFields();
+  var timeinSelect = document.querySelector('#timein');
+  var timeoutSelect = document.querySelector('#timeout');
+
+  syncFormControls(timeinSelect, timeoutSelect, CHECKIN_TIMES, CHECKOUT_TIMES, 'change', ['value'], syncFormControlValues);
+  syncFormControls(timeoutSelect, timeinSelect, CHECKIN_TIMES, CHECKOUT_TIMES, 'change', ['value'], syncFormControlValues);
+
+  syncHotelTypeAndPriceFormControls();
+
+  roomNumberSelect.addEventListener('change', function () {
+    setCapacityFormControlCustomValidity();
+  });
+
+  capacitySelect.addEventListener('change', function () {
+    setCapacityFormControlCustomValidity();
+  });
 };
 
 /** @description creating advertisements and adding listeners to advertisements
@@ -443,7 +453,7 @@ var mapPinMainMouseUpHandler = function () {
   mapSection.classList.remove('map--faded');
   advertisementForm.classList.remove('ad-form--disabled');
 
-  var disabledElements = document.querySelectorAll('[disabled]:not(option)');
+  var disabledElements = document.querySelectorAll('[disabled]');
   disabledElements.forEach(function (element) {
     element.disabled = false;
   });
