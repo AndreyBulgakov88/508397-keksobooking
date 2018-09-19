@@ -38,7 +38,11 @@ var ADVERTISEMENTS_COUNT = 8;
 var ESC_KEYCODE = 27;
 var ENTER_KEYCODE = 13;
 
-var MAP_WIDTH = 1200;
+var PIN_STARTING_COORD_X = 0;
+var PIN_ENDING_COORD_X = 1200;
+var PIN_STARTING_COORD_Y = 130;
+var PIN_ENDING_COORD_Y = 630;
+
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
 var PIN_MAIN_WIDTH = 62;
@@ -48,9 +52,11 @@ var PIN_MAIN_ARROW_HEIGHT = 22;
 var mapSection = document.querySelector('.map');
 var mapPinMain = document.querySelector('.map__pin--main');
 
+var addressInput = document.querySelector('#address');
 var roomNumberSelect = document.querySelector('#room_number');
 var capacitySelect = document.querySelector('#capacity');
-
+var typeSelect = document.querySelector('#type');
+var priceInput = document.querySelector('#price');
 // functions for working with numbers and arrays
 
 /** @description returns a random value from the range.
@@ -116,8 +122,8 @@ var createAdvertisementAutor = function (advertisementId) {
   */
 var createAdvertisementLocation = function () {
   var location = {};
-  location.x = getRandomNumber(0, MAP_WIDTH);
-  location.y = getRandomNumber(130, 630);
+  location.x = getRandomNumber(PIN_STARTING_COORD_X, PIN_ENDING_COORD_X);
+  location.y = getRandomNumber(PIN_STARTING_COORD_Y, PIN_ENDING_COORD_Y);
 
   return location;
 };
@@ -315,43 +321,41 @@ var openAdvertisementPopup = function (advertisement) {
   * @param {any} firstOptions first control options
   * @param {any} secondOptions second control options
   * @param {string} eventType event type for listeners
-  * @param {array} syncAttributes the array of attributes to put synchronized value
   * @param {Function} callback
   */
-var syncFormControls = function (firstControl, secondControl, firstOptions, secondOptions, eventType, syncAttributes, callback) {
+var syncFormControls = function (firstControl, secondControl, firstOptions, secondOptions, eventType, callback) {
   firstControl.addEventListener(eventType, function (evt) {
-    callback(secondControl, secondOptions[firstOptions.indexOf(evt.target.value)], syncAttributes);
+    callback(secondControl, secondOptions[firstOptions.indexOf(evt.target.value)]);
   });
 };
 
-/** @description a callback function for synchronizing any two of form controls
+/** @description a callback function for synchronizing values of any two form controls
   * @param {Node} formControl synchronized form control
   * @param {any} value value from other form control to synchronize given form control
-  * @param {array} syncAttributes the array of attributes to put synchronized value
   */
-var syncFormControlValues = function (formControl, value, syncAttributes) {
-  syncAttributes.forEach(function (element) {
-    formControl[element] = value;
-  });
+var syncFormControlValues = function (formControl, value) {
+  formControl.value = value;
 };
 
-/** @description synchronizes the hotel type form control and min.price in the price form control
+/** @description a callback function for synchronizing mins and placeholders attributes of any twoform controls
+  * @param {Node} formControl synchronized form control
+  * @param {any} value value from other form control to synchronize given form control
   */
-var syncHotelTypeAndPriceFormControls = function () {
-  var typeSelect = document.querySelector('#type');
-  var priceInput = document.querySelector('#price');
+var syncFormControlMinsPlaceholders = function (formControl, value) {
+  formControl.min = value;
+  formControl.placeholder = value;
+};
 
-  syncFormControls(typeSelect, priceInput, HOTEL_TYPES, HOTEL_TYPES_MIN_PRICE, 'change', ['min', 'placeholder'], syncFormControlValues);
-
-  priceInput.addEventListener('change', function () {
-    if (priceInput.validity.rangeUnderflow) {
-      priceInput.setCustomValidity('Для типа жилья ' + HOTEL_TYPES_DICTIONARY[typeSelect.value] + ' минимальная цена ' + HOTEL_TYPES_MIN_PRICE[HOTEL_TYPES.indexOf(typeSelect.value)]);
-    } else if (priceInput.validity.rangeOverflow) {
-      priceInput.setCustomValidity('Максимально возможная цена 1 000 000');
-    } else {
-      priceInput.setCustomValidity('');
-    }
-  });
+/** @description the hotel type form control synchronizes with the min.price in the price form control
+  */
+var setPriceFormControlCustomValidity = function () {
+  if (priceInput.validity.rangeUnderflow) {
+    priceInput.setCustomValidity('Для типа жилья ' + HOTEL_TYPES_DICTIONARY[typeSelect.value] + ' минимальная цена ' + HOTEL_TYPES_MIN_PRICE[HOTEL_TYPES.indexOf(typeSelect.value)]);
+  } else if (priceInput.validity.rangeOverflow) {
+    priceInput.setCustomValidity('Максимально возможная цена 1 000 000');
+  } else {
+    priceInput.setCustomValidity('');
+  }
 };
 
 /** @description available capacity form control options synchronizes with the room number form control
@@ -368,14 +372,25 @@ var setCapacityFormControlCustomValidity = function () {
 /** @description restricting input for advertisement form fields
   */
 var setupAdvertisementFormInputRestrictions = function () {
+  // synchronizing timein and timeout form controls
   var timeinSelect = document.querySelector('#timein');
   var timeoutSelect = document.querySelector('#timeout');
 
-  syncFormControls(timeinSelect, timeoutSelect, CHECKIN_TIMES, CHECKOUT_TIMES, 'change', ['value'], syncFormControlValues);
-  syncFormControls(timeoutSelect, timeinSelect, CHECKIN_TIMES, CHECKOUT_TIMES, 'change', ['value'], syncFormControlValues);
+  syncFormControls(timeinSelect, timeoutSelect, CHECKIN_TIMES, CHECKOUT_TIMES, 'change', syncFormControlValues);
+  syncFormControls(timeoutSelect, timeinSelect, CHECKIN_TIMES, CHECKOUT_TIMES, 'change', syncFormControlValues);
 
-  syncHotelTypeAndPriceFormControls();
+  // synchronizing hotel type and price form controls
+  syncFormControls(typeSelect, priceInput, HOTEL_TYPES, HOTEL_TYPES_MIN_PRICE, 'change', syncFormControlMinsPlaceholders);
 
+  priceInput.addEventListener('change', function () {
+    setPriceFormControlCustomValidity();
+  });
+
+  typeSelect.addEventListener('change', function () {
+    setPriceFormControlCustomValidity();
+  });
+
+  // synchronizing room number and capacity form controls
   roomNumberSelect.addEventListener('change', function () {
     setCapacityFormControlCustomValidity();
   });
@@ -443,11 +458,11 @@ var addPopupCloseListeners = function () {
 };
 
 
-// page activation handler
+// page activation
 
-/** @description a handler for page activation by clicking on main pin
+/** @description the page activation function
   */
-var mapPinMainMouseUpHandler = function () {
+var activatePage = function () {
   var advertisementForm = document.querySelector('.ad-form');
 
   mapSection.classList.remove('map--faded');
@@ -461,10 +476,6 @@ var mapPinMainMouseUpHandler = function () {
   configureAdvertisements();
 
   setupAdvertisementFormInputRestrictions();
-
-  getPinMainLocation(true);
-
-  mapPinMain.removeEventListener('mouseup', mapPinMainMouseUpHandler);
 };
 
 
@@ -474,8 +485,6 @@ var mapPinMainMouseUpHandler = function () {
   * @param {boolean} arrowActive the indicator of main pin arrow activity.
   */
 var getPinMainLocation = function (arrowActive) {
-  var addressInput = document.querySelector('#address');
-
   var locationX = parseInt(mapPinMain.style.left, 10) + PIN_MAIN_WIDTH / 2;
   var locationY = parseInt(mapPinMain.style.top, 10) + PIN_MAIN_HEIGHT / 2;
 
@@ -490,4 +499,60 @@ var getPinMainLocation = function (arrowActive) {
 // initial settings
 getPinMainLocation();
 makeEmptyCardElement();
-mapPinMain.addEventListener('mouseup', mapPinMainMouseUpHandler);
+
+
+// adding drag n drop mechanism to main pin
+mapPinMain.addEventListener('mousedown', function (evt) {
+  evt.preventDefault();
+
+  var startCoords = {
+    x: evt.clientX,
+    y: evt.clientY
+  };
+
+  var documentMouseMoveHandler = function (moveEvt) {
+    moveEvt.preventDefault();
+
+    if (mapSection.classList.contains('map--faded')) {
+      activatePage();
+    }
+
+    var shift = {
+      x: startCoords.x - moveEvt.clientX,
+      y: startCoords.y - moveEvt.clientY
+    };
+
+    startCoords = {
+      x: moveEvt.clientX,
+      y: moveEvt.clientY
+    };
+
+    var mapPinMainCoordX = mapPinMain.offsetLeft - shift.x;
+    var mapPinMainCoordY = mapPinMain.offsetTop - shift.y;
+
+    mapPinMainCoordX = Math.max(PIN_STARTING_COORD_X - PIN_MAIN_WIDTH / 2, mapPinMainCoordX);
+    mapPinMainCoordX = Math.min(PIN_ENDING_COORD_X - PIN_MAIN_WIDTH / 2, mapPinMainCoordX);
+    mapPinMainCoordY = Math.max(PIN_STARTING_COORD_Y - (PIN_MAIN_HEIGHT + PIN_MAIN_ARROW_HEIGHT), mapPinMainCoordY);
+    mapPinMainCoordY = Math.min(PIN_ENDING_COORD_Y - (PIN_MAIN_HEIGHT + PIN_MAIN_ARROW_HEIGHT), mapPinMainCoordY);
+
+    mapPinMain.style.top = mapPinMainCoordY + 'px';
+    mapPinMain.style.left = mapPinMainCoordX + 'px';
+
+    getPinMainLocation(true);
+  };
+
+  var documentMouseUpHandler = function (upEvt) {
+    upEvt.preventDefault();
+
+    if (mapSection.classList.contains('map--faded')) {
+      activatePage();
+      getPinMainLocation(true);
+    }
+
+    document.removeEventListener('mousemove', documentMouseMoveHandler);
+    document.removeEventListener('mouseup', documentMouseUpHandler);
+  };
+
+  document.addEventListener('mousemove', documentMouseMoveHandler);
+  document.addEventListener('mouseup', documentMouseUpHandler);
+});
