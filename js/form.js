@@ -1,6 +1,28 @@
 'use strict';
 
 (function () {
+  var HOTEL_TYPES = ['bungalo', 'flat', 'house', 'palace'];
+  var HOTEL_TYPES_MIN_PRICE = ['0', '1000', '5000', '10000'];
+  var HOTEL_TYPES_DICTIONARY = {
+    'bungalo': 'Бунгало',
+    'flat': 'Квартира',
+    'house': 'Дом',
+    'palace': 'Дворец'};
+
+  var HOTEL_ROOM_NUMBER_CAPACITY = {
+    '1': ['1'],
+    '2': ['1', '2'],
+    '3': ['1', '2', '3'],
+    '100': ['0']};
+  var HOTEL_ROOM_NUMBER_CAPACITY_DICTIONARY = {
+    '1': ['для одного гостя'],
+    '2': ['для одного гостя', ' для двух гостей'],
+    '3': ['для одного гостя', ' для двух гостей', ' для трех гостей'],
+    '100': ['не для гостей']};
+
+  var CHECKIN_TIMES = ['12:00', '13:00', '14:00'];
+  var CHECKOUT_TIMES = ['12:00', '13:00', '14:00'];
+
   var roomNumberSelect = document.querySelector('#room_number');
   var capacitySelect = document.querySelector('#capacity');
   var typeSelect = document.querySelector('#type');
@@ -41,7 +63,7 @@
     */
   var setPriceFormControlCustomValidity = function () {
     if (priceInput.validity.rangeUnderflow) {
-      priceInput.setCustomValidity('Для типа жилья ' + window.data.HOTEL_TYPES_DICTIONARY[typeSelect.value] + ' минимальная цена ' + window.data.HOTEL_TYPES_MIN_PRICE[window.data.HOTEL_TYPES.indexOf(typeSelect.value)]);
+      priceInput.setCustomValidity('Для типа жилья ' + HOTEL_TYPES_DICTIONARY[typeSelect.value] + ' минимальная цена ' + HOTEL_TYPES_MIN_PRICE[HOTEL_TYPES.indexOf(typeSelect.value)]);
     } else if (priceInput.validity.rangeOverflow) {
       priceInput.setCustomValidity('Максимально возможная цена 1 000 000');
     } else {
@@ -52,9 +74,9 @@
   /** @description available capacity form control options synchronizes with the room number form control
     */
   var setCapacityFormControlCustomValidity = function () {
-    var capacity = window.data.HOTEL_ROOM_NUMBER_CAPACITY[roomNumberSelect.value];
+    var capacity = HOTEL_ROOM_NUMBER_CAPACITY[roomNumberSelect.value];
     if (capacity.indexOf(capacitySelect.value) === -1) {
-      capacitySelect.setCustomValidity('Доступно только ' + window.data.HOTEL_ROOM_NUMBER_CAPACITY_DICTIONARY[roomNumberSelect.value]);
+      capacitySelect.setCustomValidity('Доступно только ' + HOTEL_ROOM_NUMBER_CAPACITY_DICTIONARY[roomNumberSelect.value]);
     } else {
       capacitySelect.setCustomValidity('');
     }
@@ -67,11 +89,11 @@
     var timeinSelect = document.querySelector('#timein');
     var timeoutSelect = document.querySelector('#timeout');
 
-    syncFormControls(timeinSelect, timeoutSelect, window.data.CHECKIN_TIMES, window.data.CHECKOUT_TIMES, 'change', syncFormControlValues);
-    syncFormControls(timeoutSelect, timeinSelect, window.data.CHECKIN_TIMES, window.data.CHECKOUT_TIMES, 'change', syncFormControlValues);
+    syncFormControls(timeinSelect, timeoutSelect, CHECKIN_TIMES, CHECKOUT_TIMES, 'change', syncFormControlValues);
+    syncFormControls(timeoutSelect, timeinSelect, CHECKIN_TIMES, CHECKOUT_TIMES, 'change', syncFormControlValues);
 
     // synchronizing hotel type and price form controls
-    syncFormControls(typeSelect, priceInput, window.data.HOTEL_TYPES, window.data.HOTEL_TYPES_MIN_PRICE, 'change', syncFormControlMinsPlaceholders);
+    syncFormControls(typeSelect, priceInput, HOTEL_TYPES, HOTEL_TYPES_MIN_PRICE, 'change', syncFormControlMinsPlaceholders);
 
     priceInput.addEventListener('change', function () {
       setPriceFormControlCustomValidity();
@@ -92,6 +114,10 @@
   };
 
   window.form = {
+    HOTEL_TYPES: HOTEL_TYPES,
+    HOTEL_TYPES_DICTIONARY: HOTEL_TYPES_DICTIONARY,
+    CHECKIN_TIMES: CHECKIN_TIMES,
+    CHECKOUT_TIMES: CHECKOUT_TIMES,
     setupAdvertisementFormInputRestrictions: setupAdvertisementFormInputRestrictions
   };
 })();

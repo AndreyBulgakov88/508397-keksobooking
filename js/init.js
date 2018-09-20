@@ -4,8 +4,6 @@
   var mapSection = document.querySelector('.map');
   var mapPinMain = document.querySelector('.map__pin--main');
 
-  // page activation
-
   /** @description the page activation function
     */
   var activatePage = function () {
@@ -58,10 +56,10 @@
       var mapPinMainCoordX = mapPinMain.offsetLeft - shift.x;
       var mapPinMainCoordY = mapPinMain.offsetTop - shift.y;
 
-      mapPinMainCoordX = Math.max(window.data.PIN_STARTING_COORD_X - window.data.PIN_MAIN_WIDTH / 2, mapPinMainCoordX);
-      mapPinMainCoordX = Math.min(window.data.PIN_ENDING_COORD_X - window.data.PIN_MAIN_WIDTH / 2, mapPinMainCoordX);
-      mapPinMainCoordY = Math.max(window.data.PIN_STARTING_COORD_Y - (window.data.PIN_MAIN_HEIGHT + window.data.PIN_MAIN_ARROW_HEIGHT), mapPinMainCoordY);
-      mapPinMainCoordY = Math.min(window.data.PIN_ENDING_COORD_Y - (window.data.PIN_MAIN_HEIGHT + window.data.PIN_MAIN_ARROW_HEIGHT), mapPinMainCoordY);
+      mapPinMainCoordX = Math.max(window.map.PIN_STARTING_COORD_X - window.map.PIN_MAIN_WIDTH / 2, mapPinMainCoordX);
+      mapPinMainCoordX = Math.min(window.map.PIN_ENDING_COORD_X - window.map.PIN_MAIN_WIDTH / 2, mapPinMainCoordX);
+      mapPinMainCoordY = Math.max(window.map.PIN_STARTING_COORD_Y - (window.map.PIN_MAIN_HEIGHT + window.map.PIN_MAIN_ARROW_HEIGHT), mapPinMainCoordY);
+      mapPinMainCoordY = Math.min(window.map.PIN_ENDING_COORD_Y - (window.map.PIN_MAIN_HEIGHT + window.map.PIN_MAIN_ARROW_HEIGHT), mapPinMainCoordY);
 
       mapPinMain.style.top = mapPinMainCoordY + 'px';
       mapPinMain.style.left = mapPinMainCoordX + 'px';

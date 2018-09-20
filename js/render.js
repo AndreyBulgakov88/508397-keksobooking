@@ -15,8 +15,8 @@
     var pinTemplate = document.querySelector('#pin').content;
     var pinElement = pinTemplate.cloneNode(true);
 
-    pinElement.querySelector('.map__pin').style.left = advertisement.location.x - window.data.PIN_WIDTH / 2 + 'px';
-    pinElement.querySelector('.map__pin').style.top = advertisement.location.y - window.data.PIN_HEIGHT + 'px';
+    pinElement.querySelector('.map__pin').style.left = advertisement.location.x - window.map.PIN_WIDTH / 2 + 'px';
+    pinElement.querySelector('.map__pin').style.top = advertisement.location.y - window.map.PIN_HEIGHT + 'px';
     pinElement.querySelector('.map__pin').children[0].src = advertisement.author.avatar;
     pinElement.querySelector('.map__pin').children[0].alt = advertisement.offer.title;
     pinElement.querySelector('.map__pin').setAttribute('data-id', advertisementId);
@@ -70,7 +70,7 @@
     cardElement.querySelector('.popup__title').textContent = advertisement.offer.title;
     cardElement.querySelector('.popup__text--address').textContent = advertisement.offer.address;
     cardElement.querySelector('.popup__text--price').textContent = advertisement.offer.price + '₽/ночь';
-    cardElement.querySelector('.popup__type').textContent = window.data.HOTEL_TYPES_DICTIONARY[advertisement.offer.type];
+    cardElement.querySelector('.popup__type').textContent = window.form.HOTEL_TYPES_DICTIONARY[advertisement.offer.type];
     cardElement.querySelector('.popup__text--capacity').textContent = advertisement.offer.rooms + ' комнаты для ' + advertisement.offer.guests + ' гостей';
     cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + advertisement.offer.checkin + ', выезд до ' + advertisement.offer.checkout;
 

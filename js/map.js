@@ -1,6 +1,19 @@
 'use strict';
 
 (function () {
+
+  var PIN_WIDTH = 50;
+  var PIN_HEIGHT = 70;
+
+  var PIN_STARTING_COORD_X = 0;
+  var PIN_ENDING_COORD_X = 1200;
+  var PIN_STARTING_COORD_Y = 130;
+  var PIN_ENDING_COORD_Y = 630;
+
+  var PIN_MAIN_WIDTH = 62;
+  var PIN_MAIN_HEIGHT = 62;
+  var PIN_MAIN_ARROW_HEIGHT = 22;
+
   var ESC_KEYCODE = 27;
   var ENTER_KEYCODE = 13;
 
@@ -97,17 +110,26 @@
     * @param {boolean} arrowActive the indicator of main pin arrow activity.
     */
   var getPinMainLocation = function (arrowActive) {
-    var locationX = parseInt(mapPinMain.style.left, 10) + window.data.PIN_MAIN_WIDTH / 2;
-    var locationY = parseInt(mapPinMain.style.top, 10) + window.data.PIN_MAIN_HEIGHT / 2;
+    var locationX = parseInt(mapPinMain.style.left, 10) + PIN_MAIN_WIDTH / 2;
+    var locationY = parseInt(mapPinMain.style.top, 10) + PIN_MAIN_HEIGHT / 2;
 
     if (arrowActive) {
-      locationY = locationY + window.data.PIN_MAIN_HEIGHT / 2 + window.data.PIN_MAIN_ARROW_HEIGHT;
+      locationY = locationY + PIN_MAIN_HEIGHT / 2 + PIN_MAIN_ARROW_HEIGHT;
     }
 
     addressInput.value = locationX + ', ' + locationY;
   };
 
   window.map = {
+    PIN_WIDTH: PIN_WIDTH,
+    PIN_HEIGHT: PIN_HEIGHT,
+    PIN_MAIN_ARROW_HEIGHT: PIN_MAIN_ARROW_HEIGHT,
+    PIN_MAIN_WIDTH: PIN_MAIN_WIDTH,
+    PIN_MAIN_HEIGHT: PIN_MAIN_HEIGHT,
+    PIN_STARTING_COORD_X: PIN_STARTING_COORD_X,
+    PIN_ENDING_COORD_X: PIN_ENDING_COORD_X,
+    PIN_STARTING_COORD_Y: PIN_STARTING_COORD_Y,
+    PIN_ENDING_COORD_Y: PIN_ENDING_COORD_Y,
     configureAdvertisements: configureAdvertisements,
     getPinMainLocation: getPinMainLocation
   };
