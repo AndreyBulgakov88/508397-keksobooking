@@ -23,10 +23,22 @@
   var CHECKIN_TIMES = ['12:00', '13:00', '14:00'];
   var CHECKOUT_TIMES = ['12:00', '13:00', '14:00'];
 
+  var PIN_MAIN_INITIAL_POSITION_LEFT = 570;
+  var PIN_MAIN_INITIAL_POSITION_TOP = 375;
+
+  var ESC_KEYCODE = 27;
+
+  var advertisementForm = document.querySelector('.ad-form');
+  var mapFiltersForm = document.querySelector('.map__filters');
+  var mapSection = document.querySelector('.map');
+  var mapPinMain = document.querySelector('.map__pin--main');
+
   var roomNumberSelect = document.querySelector('#room_number');
   var capacitySelect = document.querySelector('#capacity');
   var typeSelect = document.querySelector('#type');
   var priceInput = document.querySelector('#price');
+
+  var disabledFormElements = document.querySelectorAll('[disabled]');
 
   /** @description a common function for synchronizing any two of form controls using the callback function
     * @param {Node} firstControl
@@ -113,11 +125,96 @@
     });
   };
 
+
+  /** @description handler for submitting advertisement form
+    * @param {event} evt
+    */
+  var advertisementFormSubmitHandler = function (evt) {
+    evt.preventDefault();
+
+    window.backend.save(new FormData(advertisementForm), successFormSendHandler, window.backend.errorHandler);
+  };
+
+  /** @description handler for resetting advertisement form
+    * @param {event} evt
+    */
+  var advertisementFormResetHandler = function () {
+    resetPage();
+
+    advertisementForm.removeEventListener('submit', advertisementFormSubmitHandler);
+    advertisementForm.removeEventListener('reset', advertisementFormResetHandler);
+  };
+
+
+  /** @description resets page to initial state
+    */
+  var resetPage = function () {
+    mapSection.classList.add('map--faded');
+    advertisementForm.classList.add('ad-form--disabled');
+
+    advertisementForm.reset();
+    mapFiltersForm.reset();
+
+    disabledFormElements.forEach(function (element) {
+      element.disabled = true;
+    });
+
+    var pins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+    pins.forEach(function (element) {
+      element.remove();
+    });
+
+    var card = document.querySelector('.map__card');
+    card.remove();
+
+    mapPinMain.style.left = PIN_MAIN_INITIAL_POSITION_LEFT + 'px';
+    mapPinMain.style.top = PIN_MAIN_INITIAL_POSITION_TOP + 'px';
+
+    window.map.getPinMainLocation();
+  };
+
+
+  /** @description handler for successful sending form to server, showing success message and resetting page
+    */
+  var successFormSendHandler = function () {
+    var successElement = document.querySelector('#success').content.cloneNode(true);
+    document.querySelector('main').appendChild(successElement);
+    successElement = document.querySelector('.success');
+
+    var documentClickHandler = function (evtSuccess) {
+      if (evtSuccess.target === successElement) {
+        successElement.remove();
+        document.removeEventListener('click', documentClickHandler);
+        document.removeEventListener('keydown', documentEscPressHandler);
+      }
+    };
+
+    var documentEscPressHandler = function (evtSuccess) {
+      if (evtSuccess.keyCode === ESC_KEYCODE) {
+        successElement.remove();
+        document.removeEventListener('click', documentClickHandler);
+        document.removeEventListener('keydown', documentEscPressHandler);
+      }
+    };
+
+    document.addEventListener('click', documentClickHandler);
+    document.addEventListener('keydown', documentEscPressHandler);
+
+    advertisementForm.removeEventListener('submit', advertisementFormSubmitHandler);
+    advertisementForm.removeEventListener('reset', advertisementFormResetHandler);
+
+    resetPage();
+  };
+
+
   window.form = {
     HOTEL_TYPES: HOTEL_TYPES,
     HOTEL_TYPES_DICTIONARY: HOTEL_TYPES_DICTIONARY,
     CHECKIN_TIMES: CHECKIN_TIMES,
     CHECKOUT_TIMES: CHECKOUT_TIMES,
-    setupAdvertisementFormInputRestrictions: setupAdvertisementFormInputRestrictions
+    disabledFormElements: disabledFormElements,
+    setupAdvertisementFormInputRestrictions: setupAdvertisementFormInputRestrictions,
+    advertisementFormSubmitHandler: advertisementFormSubmitHandler,
+    advertisementFormResetHandler: advertisementFormResetHandler,
   };
 })();
