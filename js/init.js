@@ -15,7 +15,7 @@
     advertisementForm.addEventListener('submit', window.form.advertisementFormSubmitHandler);
     advertisementForm.addEventListener('reset', window.form.advertisementFormResetHandler);
 
-    window.form.disabledFormElements.forEach(function (element) {
+    window.form.disabledFormsElements.forEach(function (element) {
       element.disabled = false;
     });
 

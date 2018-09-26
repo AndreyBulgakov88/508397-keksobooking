@@ -74,11 +74,10 @@
   var errorHandler = function (errorMessage) {
     var errorTemplate = document.querySelector('#error').content;
     var errorElement = errorTemplate.cloneNode(true);
+    var errorButtonElement = errorElement.querySelector('.error__button');
 
     errorElement.querySelector('.error__message').textContent = errorMessage;
-
     document.querySelector('main').appendChild(errorElement);
-
     errorElement = document.querySelector('.error');
 
     var documentClickHandler = function (evt) {
@@ -100,7 +99,7 @@
     document.addEventListener('click', documentClickHandler);
     document.addEventListener('keydown', documentEscPressHandler);
 
-    errorElement.querySelector('.error__button').addEventListener('click', function () {
+    errorButtonElement.addEventListener('click', function () {
       errorElement.remove();
     });
   };

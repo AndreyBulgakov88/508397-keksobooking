@@ -38,7 +38,7 @@
   var typeSelect = document.querySelector('#type');
   var priceInput = document.querySelector('#price');
 
-  var disabledFormElements = document.querySelectorAll('[disabled]');
+  var disabledFormsElements = document.querySelectorAll('[disabled]');
 
   /** @description a common function for synchronizing any two of form controls using the callback function
     * @param {Node} firstControl
@@ -146,39 +146,59 @@
   };
 
 
-  /** @description resets page to initial state
+  /** @description resets map to initial state
     */
-  var resetPage = function () {
-    mapSection.classList.add('map--faded');
-    advertisementForm.classList.add('ad-form--disabled');
-
-    advertisementForm.reset();
-    mapFiltersForm.reset();
-
-    disabledFormElements.forEach(function (element) {
-      element.disabled = true;
-    });
-
+  var resetMap = function () {
     var pins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+    var card = document.querySelector('.map__card');
+
     pins.forEach(function (element) {
       element.remove();
     });
 
-    var card = document.querySelector('.map__card');
     card.remove();
 
+    mapSection.classList.add('map--faded');
+  };
+  /** @description resets all forms to initial state
+    */
+  var resetForms = function () {
+    mapFiltersForm.reset();
+
+    advertisementForm.classList.add('ad-form--disabled');
+    advertisementForm.reset();
+
+    disabledFormsElements.forEach(function (element) {
+      element.disabled = true;
+    });
+  };
+
+  /** @description resets main pin initial state
+    */
+  var resetMainPin = function () {
     mapPinMain.style.left = PIN_MAIN_INITIAL_POSITION_LEFT + 'px';
     mapPinMain.style.top = PIN_MAIN_INITIAL_POSITION_TOP + 'px';
 
     window.map.getPinMainLocation();
   };
 
+  /** @description resets page to initial state
+    */
+  var resetPage = function () {
+    resetMap();
+    resetForms();
+    resetMainPin();
+  };
+
 
   /** @description handler for successful sending form to server, showing success message and resetting page
     */
   var successFormSendHandler = function () {
-    var successElement = document.querySelector('#success').content.cloneNode(true);
-    document.querySelector('main').appendChild(successElement);
+    var successTemplate = document.querySelector('#success');
+    var successElement = successTemplate.content.cloneNode(true);
+    var mainSectionElement = document.querySelector('main');
+
+    mainSectionElement.appendChild(successElement);
     successElement = document.querySelector('.success');
 
     var documentClickHandler = function (evtSuccess) {
@@ -212,7 +232,7 @@
     HOTEL_TYPES_DICTIONARY: HOTEL_TYPES_DICTIONARY,
     CHECKIN_TIMES: CHECKIN_TIMES,
     CHECKOUT_TIMES: CHECKOUT_TIMES,
-    disabledFormElements: disabledFormElements,
+    disabledFormsElements: disabledFormsElements,
     setupAdvertisementFormInputRestrictions: setupAdvertisementFormInputRestrictions,
     advertisementFormSubmitHandler: advertisementFormSubmitHandler,
     advertisementFormResetHandler: advertisementFormResetHandler,
