@@ -35,7 +35,7 @@
     }
   };
 
-  /** @description returns a data-id attribute from pin DOM element
+  /** @description renders advertisement card
     * @param {object} advertisement
     */
   var openAdvertisementPopup = function (advertisement) {
@@ -43,15 +43,30 @@
     cardElement.classList.remove('hidden');
   };
 
+  /** @description sets current pin element to active condition
+    * @param {Node} element the pin DOM element.
+    */
+  var setActivePin = function (element) {
+    var activePinElement = document.querySelector('.map__pin--active');
+    if (activePinElement) {
+      activePinElement.classList.remove('map__pin--active');
+    }
+
+    if (!element.classList.contains('map__pin')) {
+      element.parentNode.classList.add('map__pin--active');
+    } else {
+      element.classList.add('map__pin--active');
+    }
+  };
 
   // setup functions
 
-  /** @description creating advertisements and adding listeners to advertisements
+  /** @description handler for successful loading advertisements and setup pins event listeners
+    * @param {array} advertisementsArray
     */
-  var configureAdvertisements = function () {
+  var successAdvertisementsLoadHandler = function (advertisementsArray) {
     var mapPins = document.querySelector('.map__pins');
 
-    var advertisementsArray = window.data.createAdvertisements();
     mapPins.appendChild(window.util.renderArrayToChildNodes(advertisementsArray, window.render.renderPin));
 
     mapPins.addEventListener('click', function (evt) {
@@ -62,8 +77,17 @@
 
       openAdvertisementPopup(advertisementsArray[advertisementId]);
 
+      setActivePin(evt.target);
+
       addPopupCloseListeners();
     });
+  };
+
+
+  /** @description loading advertisements from server
+    */
+  var loadAdvertisements = function () {
+    window.backend.load(successAdvertisementsLoadHandler, window.backend.errorHandler);
   };
 
 
@@ -83,6 +107,12 @@
   var closePopup = function () {
     var cardElement = document.querySelector('.map__card');
     cardElement.classList.add('hidden');
+
+    var activePinElement = document.querySelector('.map__pin--active');
+    if (activePinElement) {
+      activePinElement.classList.remove('map__pin--active');
+    }
+
     document.removeEventListener('keydown', popupEscPressHandler);
   };
 
@@ -103,8 +133,6 @@
     });
   };
 
-
-  // getting a main pin location
 
   /** @description getting a main pin location and putting it into the address input
     * @param {boolean} arrowActive the indicator of main pin arrow activity.
@@ -130,7 +158,7 @@
     PIN_ENDING_COORD_X: PIN_ENDING_COORD_X,
     PIN_STARTING_COORD_Y: PIN_STARTING_COORD_Y,
     PIN_ENDING_COORD_Y: PIN_ENDING_COORD_Y,
-    configureAdvertisements: configureAdvertisements,
+    loadAdvertisements: loadAdvertisements,
     getPinMainLocation: getPinMainLocation
   };
 
