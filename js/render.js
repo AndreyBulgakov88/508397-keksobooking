@@ -24,6 +24,16 @@
     return pinElement;
   };
 
+  /** @description renders advertisements array to map pins
+    * @param {array} advertisementsArrayToRender
+    */
+  var renderMapPins = function (advertisementsArrayToRender) {
+    window.map.resetMap();
+
+    var mapPinsElement = document.querySelector('.map__pins');
+    mapPinsElement.appendChild(window.util.renderArrayToChildNodes(advertisementsArrayToRender, renderPin));
+  };
+
   /** @description creates and returns a single offer feature DOMElement
     * @param {string} featureName
     * @return {Node}
@@ -78,7 +88,8 @@
     window.util.removeChildNodes(featuresElement);
     featuresElement.appendChild(window.util.renderArrayToChildNodes(advertisement.offer.features, makeFeatureElement));
 
-    cardElement.querySelector('.popup__description').textContent = advertisement.offer.description;
+    var descriptionElement = cardElement.querySelector('.popup__description');
+    descriptionElement.textContent = advertisement.offer.description;
 
     var photosElement = cardElement.querySelector('.popup__photos');
     window.util.removeChildNodes(photosElement);
@@ -87,9 +98,10 @@
     return cardElement;
   };
 
+
   window.render = {
     makeEmptyCardElement: makeEmptyCardElement,
     renderCard: renderCard,
-    renderPin: renderPin
+    renderMapPins: renderMapPins
   };
 })();

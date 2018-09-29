@@ -3,6 +3,7 @@
 (function () {
   var mapSection = document.querySelector('.map');
   var mapPinMain = document.querySelector('.map__pin--main');
+  var mapFiltersForm = document.querySelector('.map__filters');
   var advertisementForm = document.querySelector('.ad-form');
 
 
@@ -10,8 +11,10 @@
     */
   var activatePage = function () {
     mapSection.classList.remove('map--faded');
-    advertisementForm.classList.remove('ad-form--disabled');
 
+    mapFiltersForm.addEventListener('change', window.util.debounce(window.filters.mapFiltersChangeHandler));
+
+    advertisementForm.classList.remove('ad-form--disabled');
     advertisementForm.addEventListener('submit', window.form.advertisementFormSubmitHandler);
     advertisementForm.addEventListener('reset', window.form.advertisementFormResetHandler);
 
@@ -21,13 +24,12 @@
 
     window.map.loadAdvertisements();
     window.form.setupAdvertisementFormInputRestrictions();
-    window.render.makeEmptyCardElement();
   };
 
 
   // initial settings
   window.map.getPinMainLocation();
-
+  window.render.makeEmptyCardElement();
 
   // adding drag n drop mechanism to main pin
   mapPinMain.addEventListener('mousedown', function (evt) {

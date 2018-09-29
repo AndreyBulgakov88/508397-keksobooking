@@ -1,8 +1,6 @@
 'use strict';
 
 (function () {
-  var ESC_KEYCODE = 27;
-
   /** @description loads data from server
     * @param {function} onLoad  callback function, triggering when data successfully loads to server
     * @param {function} onError callback function, triggering when an error occured during loading to server
@@ -89,7 +87,7 @@
     };
 
     var documentEscPressHandler = function (evt) {
-      if (evt.keyCode === ESC_KEYCODE) {
+      if (window.util.isEscPressed(evt)) {
         errorElement.remove();
         document.removeEventListener('click', documentClickHandler);
         document.removeEventListener('keydown', documentEscPressHandler);
@@ -102,6 +100,8 @@
     errorButtonElement.addEventListener('click', function () {
       errorElement.remove();
     });
+
+    window.filters.setFiltersAccessibility(true);
   };
 
 

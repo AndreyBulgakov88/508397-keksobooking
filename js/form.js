@@ -26,8 +26,6 @@
   var PIN_MAIN_INITIAL_POSITION_LEFT = 570;
   var PIN_MAIN_INITIAL_POSITION_TOP = 375;
 
-  var ESC_KEYCODE = 27;
-
   var advertisementForm = document.querySelector('.ad-form');
   var mapFiltersForm = document.querySelector('.map__filters');
   var mapSection = document.querySelector('.map');
@@ -145,27 +143,17 @@
     advertisementForm.removeEventListener('reset', advertisementFormResetHandler);
   };
 
-
-  /** @description resets map to initial state
+  /** @description fades map and forms
     */
-  var resetMap = function () {
-    var pins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
-    var card = document.querySelector('.map__card');
-
-    pins.forEach(function (element) {
-      element.remove();
-    });
-
-    card.remove();
-
+  var fadePage = function () {
     mapSection.classList.add('map--faded');
+    advertisementForm.classList.add('ad-form--disabled');
   };
+
   /** @description resets all forms to initial state
     */
   var resetForms = function () {
     mapFiltersForm.reset();
-
-    advertisementForm.classList.add('ad-form--disabled');
     advertisementForm.reset();
 
     disabledFormsElements.forEach(function (element) {
@@ -185,9 +173,10 @@
   /** @description resets page to initial state
     */
   var resetPage = function () {
-    resetMap();
+    window.map.resetMap();
     resetForms();
     resetMainPin();
+    fadePage();
   };
 
 
@@ -210,7 +199,7 @@
     };
 
     var documentEscPressHandler = function (evtSuccess) {
-      if (evtSuccess.keyCode === ESC_KEYCODE) {
+      if (window.util.isEscPressed(evtSuccess)) {
         successElement.remove();
         document.removeEventListener('click', documentClickHandler);
         document.removeEventListener('keydown', documentEscPressHandler);

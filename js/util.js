@@ -1,6 +1,11 @@
 'use strict';
 
 (function () {
+  var ESC_KEYCODE = 27;
+  var ENTER_KEYCODE = 13;
+
+  var DEBOUNCE_INTERVAL = 500;
+
   // functions for working with numbers and arrays
 
   /** @description returns a random value from the range.
@@ -74,12 +79,37 @@
   };
 
 
+  /** @description common debounce function
+    * @param {Function} callback
+    * @return {Function}
+    */
+  var debounce = function (callback) {
+    var lastTimeout = null;
+
+    return function () {
+      var args = arguments;
+      if (lastTimeout) {
+        window.clearTimeout(lastTimeout);
+      }
+      lastTimeout = window.setTimeout(function () {
+        callback.apply(null, args);
+      }, DEBOUNCE_INTERVAL);
+    };
+  };
+
   window.util = {
     getRandomNumber: getRandomNumber,
     getRandomItemFromArray: getRandomItemFromArray,
     getRandomValuesFromArray: getRandomValuesFromArray,
     shuffleArray: shuffleArray,
     renderArrayToChildNodes: renderArrayToChildNodes,
-    removeChildNodes: removeChildNodes
+    removeChildNodes: removeChildNodes,
+    isEnterPressed: function (evt) {
+      return evt.keyCode === ENTER_KEYCODE;
+    },
+    isEscPressed: function (evt) {
+      return evt.keyCode === ESC_KEYCODE;
+    },
+    debounce: debounce
   };
 })();
