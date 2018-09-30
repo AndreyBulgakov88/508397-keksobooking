@@ -4,27 +4,6 @@
   var ESC_KEYCODE = 27;
   var ENTER_KEYCODE = 13;
 
-  var DEBOUNCE_INTERVAL = 500;
-
-  // functions for working with numbers and arrays
-
-  /** @description returns a random value from the range.
-    * @param {number} minValue the minimum value of the range.
-    * @param {number} maxValue the maximum value of the range.
-    * @return {number}
-    */
-  var getRandomNumber = function (minValue, maxValue) {
-    return Math.floor((maxValue + 1 - minValue) * Math.random() + minValue);
-  };
-
-  /** @description returns a random item from the arbitrary array.
-    * @param {array} array
-    * @return {any}
-    */
-  var getRandomItemFromArray = function (array) {
-    return array[getRandomNumber(0, array.length - 1)];
-  };
-
   /** @description returns a random array of the definite length from initial array items.
     * @param {array} initialArray
     *  @param {number} valuesCount the result array length.
@@ -52,9 +31,6 @@
     return resultArray;
   }
 
-
-  // functions for working with child nodes
-
   /** @description returns a document fragment with child nodes rendered from the array using the callback function
     * @param {array} array
     * @param {function} callback
@@ -78,12 +54,12 @@
     }
   };
 
-
   /** @description common debounce function
     * @param {Function} callback
+    * @param {Number} debounceInterval
     * @return {Function}
     */
-  var debounce = function (callback) {
+  var debounce = function (callback, debounceInterval) {
     var lastTimeout = null;
 
     return function () {
@@ -93,15 +69,12 @@
       }
       lastTimeout = window.setTimeout(function () {
         callback.apply(null, args);
-      }, DEBOUNCE_INTERVAL);
+      }, debounceInterval);
     };
   };
 
   window.util = {
-    getRandomNumber: getRandomNumber,
-    getRandomItemFromArray: getRandomItemFromArray,
     getRandomValuesFromArray: getRandomValuesFromArray,
-    shuffleArray: shuffleArray,
     renderArrayToChildNodes: renderArrayToChildNodes,
     removeChildNodes: removeChildNodes,
     isEnterPressed: function (evt) {

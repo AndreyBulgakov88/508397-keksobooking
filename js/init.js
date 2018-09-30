@@ -1,6 +1,8 @@
 'use strict';
 
 (function () {
+  var DEBOUNCE_INTERVAL = 500;
+
   var mapSection = document.querySelector('.map');
   var mapPinMain = document.querySelector('.map__pin--main');
   var mapFiltersForm = document.querySelector('.map__filters');
@@ -12,7 +14,7 @@
   var activatePage = function () {
     mapSection.classList.remove('map--faded');
 
-    mapFiltersForm.addEventListener('change', window.util.debounce(window.filters.mapFiltersChangeHandler));
+    mapFiltersForm.addEventListener('change', window.util.debounce(window.filters.mapFiltersChangeHandler, DEBOUNCE_INTERVAL));
 
     advertisementForm.classList.remove('ad-form--disabled');
     advertisementForm.addEventListener('submit', window.form.advertisementFormSubmitHandler);
@@ -30,6 +32,7 @@
   // initial settings
   window.map.getPinMainLocation();
   window.render.makeEmptyCardElement();
+
 
   // adding drag n drop mechanism to main pin
   mapPinMain.addEventListener('mousedown', function (evt) {

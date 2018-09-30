@@ -20,8 +20,6 @@
   var ADVERTISEMENTS_COUNT = 8;
 
 
-  // functions for creating advertisements
-
   /** @description creates an autor object for the advertisement.
     * @param {number} advertisementId
     * @return {object}

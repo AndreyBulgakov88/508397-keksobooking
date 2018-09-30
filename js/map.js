@@ -20,8 +20,6 @@
   var addressInput = document.querySelector('#address');
 
 
-  // functions for working with the advertisement popup
-
   /** @description returns a data-id attribute from pin DOM element
     * @param {Node} element the pin DOM element.
     * @return {number}
@@ -41,56 +39,6 @@
     var cardElement = window.render.renderCard(advertisement);
     cardElement.classList.remove('hidden');
   };
-
-  /** @description sets current pin element to active condition
-    * @param {Node} element the pin DOM element.
-    */
-  var setActivePin = function (element) {
-    var activePinElement = document.querySelector('.map__pin--active');
-    if (activePinElement) {
-      activePinElement.classList.remove('map__pin--active');
-    }
-
-    if (!element.classList.contains('map__pin')) {
-      element.parentNode.classList.add('map__pin--active');
-    } else {
-      element.classList.add('map__pin--active');
-    }
-  };
-
-  // setup functions
-
-  /** @description handler for successful loading advertisements and setup pins event listeners
-    * @param {array} advertisementsArray
-    */
-  var successAdvertisementsLoadHandler = function (advertisementsArray) {
-    var mapPins = document.querySelector('.map__pins');
-
-    window.map.advertisementsOnMap = window.util.getRandomValuesFromArray(advertisementsArray, MAX_RENDERED_ADVERTISEMENTS);
-    window.render.renderMapPins(window.map.advertisementsOnMap);
-
-    mapPins.addEventListener('click', function (evt) {
-      var advertisementId = getAdvertisementId(evt.target);
-      if (!advertisementId) {
-        return;
-      }
-
-      openAdvertisementPopup(window.map.advertisementsOnMap[advertisementId]);
-      setActivePin(evt.target);
-      addPopupCloseListeners();
-    });
-
-    window.map.advertisements = advertisementsArray;
-  };
-
-  /** @description loading advertisements from server
-    */
-  var loadAdvertisements = function () {
-    window.backend.load(successAdvertisementsLoadHandler, window.backend.errorHandler);
-  };
-
-
-  // popup handlers
 
   /** @description a handler for the escape-pressing event when the popup window is open
     * @param {Event} evt
@@ -132,6 +80,21 @@
     });
   };
 
+  /** @description sets current pin element to active condition
+    * @param {Node} element the pin DOM element.
+    */
+  var setActivePin = function (element) {
+    var activePinElement = document.querySelector('.map__pin--active');
+    if (activePinElement) {
+      activePinElement.classList.remove('map__pin--active');
+    }
+
+    if (!element.classList.contains('map__pin')) {
+      element.parentNode.classList.add('map__pin--active');
+    } else {
+      element.classList.add('map__pin--active');
+    }
+  };
 
   /** @description clearing card DOMElement
     */
@@ -155,6 +118,36 @@
     window.util.removeChildNodes(photosElement);
 
     cardElement.classList.add('hidden');
+  };
+
+
+  /** @description handler for successful loading advertisements and setup pins event listeners
+    * @param {array} advertisementsArray
+    */
+  var successAdvertisementsLoadHandler = function (advertisementsArray) {
+    var mapPins = document.querySelector('.map__pins');
+
+    window.map.advertisementsOnMap = window.util.getRandomValuesFromArray(advertisementsArray, MAX_RENDERED_ADVERTISEMENTS);
+    window.render.renderMapPins(window.map.advertisementsOnMap);
+
+    mapPins.addEventListener('click', function (evt) {
+      var advertisementId = getAdvertisementId(evt.target);
+      if (!advertisementId) {
+        return;
+      }
+
+      openAdvertisementPopup(window.map.advertisementsOnMap[advertisementId]);
+      setActivePin(evt.target);
+      addPopupCloseListeners();
+    });
+
+    window.map.advertisements = advertisementsArray;
+  };
+
+  /** @description loading advertisements from server
+    */
+  var loadAdvertisements = function () {
+    window.backend.load(successAdvertisementsLoadHandler, window.backend.errorHandler);
   };
 
 

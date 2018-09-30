@@ -4,7 +4,6 @@
 
   var mapSection = document.querySelector('.map');
 
-  // functions for rendering elements
 
   /** @description returns a pin node rendered from the advertisement
     * @param {object} advertisement
