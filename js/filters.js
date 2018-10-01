@@ -2,9 +2,19 @@
 
 (function () {
   var FILTER_HOUSING_PRICE_DICTIONARY = {
-    'low': {minPrice: 0, maxPrice: 10000},
-    'middle': {minPrice: 10000, maxPrice: 50000},
-    'high': {minPrice: 50000, maxPrice: Infinity}};
+    'low': {
+      minPrice: 0,
+      maxPrice: 10000
+    },
+    'middle': {
+      minPrice: 10000,
+      maxPrice: 50000
+    },
+    'high': {
+      minPrice: 50000,
+      maxPrice: Infinity
+    }
+  };
 
   var filteredAdvertisements = [];
 
@@ -64,12 +74,12 @@
 
   /** @description applying advertisement offer features map filter
     * @param {object} advertisement
-    * @param {NodeList} filterFormElement
+    * @param {NodeList} filterFormElements
     * @return {boolean}
     */
-  var applyFilterFeatures = function (advertisement, filterFormElement) {
-    for (var i = 0; i < filterFormElement.length; i++) {
-      if (advertisement.offer.features.indexOf(filterFormElement[i].value) === -1) {
+  var applyFilterFeatures = function (advertisement, filterFormElements) {
+    for (var i = 0; i < filterFormElements.length; i++) {
+      if (advertisement.offer.features.indexOf(filterFormElements[i].value) === -1) {
         return false;
       }
     }
@@ -86,7 +96,7 @@
     var filterHousingGuestsElement = document.querySelector('#housing-guests');
     var filterFeaturesElements = document.querySelectorAll('input[name=features]:checked');
 
-    filteredAdvertisements = window.map.advertisements;
+    filteredAdvertisements = window.map.advertisementsAll;
 
     applyFilter(filterHousingTypeElement, applyFilterHousingType);
     applyFilter(filterHousingPriceElement, applyFilterHousingPrice);
@@ -107,7 +117,7 @@
     applyFilters();
 
     window.render.renderMapPins(filteredAdvertisements);
-    window.map.advertisementsOnMap = filteredAdvertisements;
+    window.map.setAdvertisements(filteredAdvertisements);
   };
 
 
@@ -115,14 +125,14 @@
     * @param {boolean} accessibility
     */
   var setFiltersAccessibility = function (accessibility) {
-    var mapFilters = document.querySelectorAll('.map__filter');
-    var mapFeatures = document.querySelector('.map__features');
+    var mapFiltersElements = document.querySelectorAll('.map__filter');
+    var mapFeaturesElement = document.querySelector('.map__features');
 
-    mapFilters.forEach(function (element) {
+    mapFiltersElements.forEach(function (element) {
       element.disabled = accessibility;
     });
 
-    mapFeatures.disabled = accessibility;
+    mapFeaturesElement.disabled = accessibility;
   };
 
   window.filters = {

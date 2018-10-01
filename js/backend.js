@@ -70,8 +70,8 @@
     * @param {object} errorMessage
     */
   var errorHandler = function (errorMessage) {
-    var errorTemplate = document.querySelector('#error').content;
-    var errorElement = errorTemplate.cloneNode(true);
+    var errorTemplateElement = document.querySelector('#error').content;
+    var errorElement = errorTemplateElement.cloneNode(true);
     var errorButtonElement = errorElement.querySelector('.error__button');
 
     errorElement.querySelector('.error__message').textContent = errorMessage;

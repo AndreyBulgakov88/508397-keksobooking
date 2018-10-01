@@ -3,22 +3,22 @@
 (function () {
   var DEBOUNCE_INTERVAL = 500;
 
-  var mapSection = document.querySelector('.map');
-  var mapPinMain = document.querySelector('.map__pin--main');
-  var mapFiltersForm = document.querySelector('.map__filters');
-  var advertisementForm = document.querySelector('.ad-form');
-
+  var mapSectionElement = document.querySelector('.map');
+  var mapPinMainElement = document.querySelector('.map__pin--main');
+  var mapFiltersFormElement = document.querySelector('.map__filters');
+  var advertisementFormElement = document.querySelector('.ad-form');
+  var ResetButtonElement = document.querySelector('.ad-form__reset');
 
   /** @description the page activation function
     */
   var activatePage = function () {
-    mapSection.classList.remove('map--faded');
+    mapSectionElement.classList.remove('map--faded');
 
-    mapFiltersForm.addEventListener('change', window.util.debounce(window.filters.mapFiltersChangeHandler, DEBOUNCE_INTERVAL));
+    mapFiltersFormElement.addEventListener('change', window.util.debounce(window.filters.mapFiltersChangeHandler, DEBOUNCE_INTERVAL));
 
-    advertisementForm.classList.remove('ad-form--disabled');
-    advertisementForm.addEventListener('submit', window.form.advertisementFormSubmitHandler);
-    advertisementForm.addEventListener('reset', window.form.advertisementFormResetHandler);
+    advertisementFormElement.classList.remove('ad-form--disabled');
+    advertisementFormElement.addEventListener('submit', window.form.advertisementFormSubmitHandler);
+    ResetButtonElement.addEventListener('click', window.form.advertisementFormResetHandler);
 
     window.form.disabledFormsElements.forEach(function (element) {
       element.disabled = false;
@@ -35,7 +35,7 @@
 
 
   // adding drag n drop mechanism to main pin
-  mapPinMain.addEventListener('mousedown', function (evt) {
+  mapPinMainElement.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
 
     var startCoords = {
@@ -46,7 +46,7 @@
     var documentMouseMoveHandler = function (moveEvt) {
       moveEvt.preventDefault();
 
-      if (mapSection.classList.contains('map--faded')) {
+      if (mapSectionElement.classList.contains('map--faded')) {
         activatePage();
       }
 
@@ -60,16 +60,16 @@
         y: moveEvt.clientY
       };
 
-      var mapPinMainCoordX = mapPinMain.offsetLeft - shift.x;
-      var mapPinMainCoordY = mapPinMain.offsetTop - shift.y;
+      var mapPinMainCoordX = mapPinMainElement.offsetLeft - shift.x;
+      var mapPinMainCoordY = mapPinMainElement.offsetTop - shift.y;
 
       mapPinMainCoordX = Math.max(window.map.PIN_STARTING_COORD_X - window.map.PIN_MAIN_WIDTH / 2, mapPinMainCoordX);
       mapPinMainCoordX = Math.min(window.map.PIN_ENDING_COORD_X - window.map.PIN_MAIN_WIDTH / 2, mapPinMainCoordX);
       mapPinMainCoordY = Math.max(window.map.PIN_STARTING_COORD_Y - (window.map.PIN_MAIN_HEIGHT + window.map.PIN_MAIN_ARROW_HEIGHT), mapPinMainCoordY);
       mapPinMainCoordY = Math.min(window.map.PIN_ENDING_COORD_Y - (window.map.PIN_MAIN_HEIGHT + window.map.PIN_MAIN_ARROW_HEIGHT), mapPinMainCoordY);
 
-      mapPinMain.style.top = mapPinMainCoordY + 'px';
-      mapPinMain.style.left = mapPinMainCoordX + 'px';
+      mapPinMainElement.style.top = mapPinMainCoordY + 'px';
+      mapPinMainElement.style.left = mapPinMainCoordX + 'px';
 
       window.map.getPinMainLocation(true);
     };
@@ -77,7 +77,7 @@
     var documentMouseUpHandler = function (upEvt) {
       upEvt.preventDefault();
 
-      if (mapSection.classList.contains('map--faded')) {
+      if (mapSectionElement.classList.contains('map--faded')) {
         activatePage();
         window.map.getPinMainLocation(true);
       }

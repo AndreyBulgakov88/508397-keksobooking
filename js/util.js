@@ -46,11 +46,11 @@
   };
 
   /** @description removes all child nodes from the parent node
-    * @param {Node} parentNode
+    * @param {Node} parentNodeElement
     */
-  var removeChildNodes = function (parentNode) {
-    while (parentNode.lastChild) {
-      parentNode.removeChild(parentNode.lastChild);
+  var removeChildNodes = function (parentNodeElement) {
+    while (parentNodeElement.lastChild) {
+      parentNodeElement.removeChild(parentNodeElement.lastChild);
     }
   };
 

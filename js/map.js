@@ -16,8 +16,8 @@
 
   var MAX_RENDERED_ADVERTISEMENTS = 5;
 
-  var mapPinMain = document.querySelector('.map__pin--main');
-  var addressInput = document.querySelector('#address');
+  var mapPinMainElement = document.querySelector('.map__pin--main');
+  var addressInputElement = document.querySelector('#address');
 
 
   /** @description returns a data-id attribute from pin DOM element
@@ -27,9 +27,9 @@
   var getAdvertisementId = function (element) {
     if (!element.classList.contains('map__pin')) {
       return element.parentNode.getAttribute('data-id');
-    } else {
-      return element.getAttribute('data-id');
     }
+
+    return element.getAttribute('data-id');
   };
 
   /** @description renders advertisement card
@@ -68,12 +68,12 @@
   var addPopupCloseListeners = function () {
     document.addEventListener('keydown', popupEscPressHandler);
 
-    var popupClose = document.querySelector('.popup__close');
-    popupClose.addEventListener('click', function () {
+    var popupCloseElement = document.querySelector('.popup__close');
+    popupCloseElement.addEventListener('click', function () {
       closePopup();
     });
 
-    popupClose.addEventListener('keydown', function (evt) {
+    popupCloseElement.addEventListener('keydown', function (evt) {
       if (window.util.isEnterPressed(evt)) {
         closePopup();
       }
@@ -122,14 +122,17 @@
 
 
   /** @description handler for successful loading advertisements and setup pins event listeners
-    * @param {array} advertisementsArray
+    * @param {array} advertisements
     */
-  var successAdvertisementsLoadHandler = function (advertisementsArray) {
-    var mapPins = document.querySelector('.map__pins');
+  var successAdvertisementsLoadHandler = function (advertisements) {
+    window.map.advertisementsAll = advertisements;
 
-    window.map.advertisementsOnMap = window.util.getRandomValuesFromArray(advertisementsArray, MAX_RENDERED_ADVERTISEMENTS);
+    var randomAdvertisements = window.util.getRandomValuesFromArray(advertisements, MAX_RENDERED_ADVERTISEMENTS);
+    setAdvertisements(randomAdvertisements);
+
     window.render.renderMapPins(window.map.advertisementsOnMap);
 
+    var mapPins = document.querySelector('.map__pins');
     mapPins.addEventListener('click', function (evt) {
       var advertisementId = getAdvertisementId(evt.target);
       if (!advertisementId) {
@@ -140,8 +143,6 @@
       setActivePin(evt.target);
       addPopupCloseListeners();
     });
-
-    window.map.advertisements = advertisementsArray;
   };
 
   /** @description loading advertisements from server
@@ -150,12 +151,19 @@
     window.backend.load(successAdvertisementsLoadHandler, window.backend.errorHandler);
   };
 
+  /** @description sets advertisements array to the variable that holding advertisements to render on map
+    * @param {array} advertisements
+    */
+  var setAdvertisements = function (advertisements) {
+    window.map.advertisementsOnMap = advertisements;
+  };
+
 
   /** @description removes map pins and closes open advertisement card
     */
   var resetMap = function () {
-    var pins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
-    pins.forEach(function (element) {
+    var pinsElements = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+    pinsElements.forEach(function (element) {
       element.remove();
     });
 
@@ -167,14 +175,14 @@
     * @param {boolean} arrowActive the indicator of main pin arrow activity.
     */
   var getPinMainLocation = function (arrowActive) {
-    var locationX = parseInt(mapPinMain.style.left, 10) + PIN_MAIN_WIDTH / 2;
-    var locationY = parseInt(mapPinMain.style.top, 10) + PIN_MAIN_HEIGHT / 2;
+    var locationX = parseInt(mapPinMainElement.style.left, 10) + PIN_MAIN_WIDTH / 2;
+    var locationY = parseInt(mapPinMainElement.style.top, 10) + PIN_MAIN_HEIGHT / 2;
 
     if (arrowActive) {
       locationY = locationY + PIN_MAIN_HEIGHT / 2 + PIN_MAIN_ARROW_HEIGHT;
     }
 
-    addressInput.value = locationX + ', ' + locationY;
+    addressInputElement.value = locationX + ', ' + locationY;
   };
 
   window.map = {
@@ -188,9 +196,10 @@
     PIN_ENDING_COORD_X: PIN_ENDING_COORD_X,
     PIN_STARTING_COORD_Y: PIN_STARTING_COORD_Y,
     PIN_ENDING_COORD_Y: PIN_ENDING_COORD_Y,
-    advertisements: [],
+    advertisementsAll: [],
     advertisementsOnMap: [],
     loadAdvertisements: loadAdvertisements,
+    setAdvertisements: setAdvertisements,
     getPinMainLocation: getPinMainLocation,
     resetMap: resetMap
   };

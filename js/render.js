@@ -2,7 +2,7 @@
 
 (function () {
 
-  var mapSection = document.querySelector('.map');
+  var mapSectionElement = document.querySelector('.map');
 
 
   /** @description returns a pin node rendered from the advertisement
@@ -11,8 +11,8 @@
     * @return {Node}
     */
   var renderPin = function (advertisement, advertisementId) {
-    var pinTemplate = document.querySelector('#pin').content;
-    var pinElement = pinTemplate.cloneNode(true);
+    var pinTemplateElement = document.querySelector('#pin').content;
+    var pinElement = pinTemplateElement.cloneNode(true);
 
     pinElement.querySelector('.map__pin').style.left = advertisement.location.x - window.map.PIN_WIDTH / 2 + 'px';
     pinElement.querySelector('.map__pin').style.top = advertisement.location.y - window.map.PIN_HEIGHT + 'px';
@@ -24,13 +24,13 @@
   };
 
   /** @description renders advertisements array to map pins
-    * @param {array} advertisementsArrayToRender
+    * @param {array} advertisementsToRender
     */
-  var renderMapPins = function (advertisementsArrayToRender) {
+  var renderMapPins = function (advertisementsToRender) {
     window.map.resetMap();
 
     var mapPinsElement = document.querySelector('.map__pins');
-    mapPinsElement.appendChild(window.util.renderArrayToChildNodes(advertisementsArrayToRender, renderPin));
+    mapPinsElement.appendChild(window.util.renderArrayToChildNodes(advertisementsToRender, renderPin));
   };
 
   /** @description creates and returns a single offer feature DOMElement
@@ -63,9 +63,9 @@
   /** @description creates an empty offer card DOMElement
     */
   var makeEmptyCardElement = function () {
-    var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
-    var cardElement = cardTemplate.cloneNode(true);
-    mapSection.insertBefore(cardElement, document.querySelector('.map__filters-container'));
+    var cardTemplateElement = document.querySelector('#card').content.querySelector('.map__card');
+    var cardElement = cardTemplateElement.cloneNode(true);
+    mapSectionElement.insertBefore(cardElement, document.querySelector('.map__filters-container'));
     cardElement.classList.add('hidden');
   };
 
