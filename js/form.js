@@ -26,71 +26,70 @@
   var PIN_MAIN_INITIAL_POSITION_LEFT = 570;
   var PIN_MAIN_INITIAL_POSITION_TOP = 375;
 
-  var ESC_KEYCODE = 27;
+  var advertisementFormElement = document.querySelector('.ad-form');
+  var ResetButtonElement = document.querySelector('.ad-form__reset');
+  var mapFiltersFormElement = document.querySelector('.map__filters');
+  var mapSectionElement = document.querySelector('.map');
+  var mapPinMainElement = document.querySelector('.map__pin--main');
 
-  var advertisementForm = document.querySelector('.ad-form');
-  var mapFiltersForm = document.querySelector('.map__filters');
-  var mapSection = document.querySelector('.map');
-  var mapPinMain = document.querySelector('.map__pin--main');
-
-  var roomNumberSelect = document.querySelector('#room_number');
-  var capacitySelect = document.querySelector('#capacity');
-  var typeSelect = document.querySelector('#type');
-  var priceInput = document.querySelector('#price');
+  var roomNumberSelectElement = document.querySelector('#room_number');
+  var capacitySelectElement = document.querySelector('#capacity');
+  var typeSelectElement = document.querySelector('#type');
+  var priceInputElement = document.querySelector('#price');
 
   var disabledFormsElements = document.querySelectorAll('[disabled]');
 
   /** @description a common function for synchronizing any two of form controls using the callback function
-    * @param {Node} firstControl
-    * @param {Node} secondControl
+    * @param {Node} firstControlElement
+    * @param {Node} secondControlElement
     * @param {any} firstOptions first control options
     * @param {any} secondOptions second control options
     * @param {string} eventType event type for listeners
     * @param {Function} callback
     */
-  var syncFormControls = function (firstControl, secondControl, firstOptions, secondOptions, eventType, callback) {
-    firstControl.addEventListener(eventType, function (evt) {
-      callback(secondControl, secondOptions[firstOptions.indexOf(evt.target.value)]);
+  var syncFormControls = function (firstControlElement, secondControlElement, firstOptions, secondOptions, eventType, callback) {
+    firstControlElement.addEventListener(eventType, function (evt) {
+      callback(secondControlElement, secondOptions[firstOptions.indexOf(evt.target.value)]);
     });
   };
 
   /** @description a callback function for synchronizing values of any two form controls
-    * @param {Node} formControl synchronized form control
+    * @param {Node} formControlElement synchronized form control
     * @param {any} value value from other form control to synchronize given form control
     */
-  var syncFormControlValues = function (formControl, value) {
-    formControl.value = value;
+  var syncFormControlValues = function (formControlElement, value) {
+    formControlElement.value = value;
   };
 
   /** @description a callback function for synchronizing mins and placeholders attributes of any twoform controls
-    * @param {Node} formControl synchronized form control
+    * @param {Node} formControlElement synchronized form control
     * @param {any} value value from other form control to synchronize given form control
     */
-  var syncFormControlMinsPlaceholders = function (formControl, value) {
-    formControl.min = value;
-    formControl.placeholder = value;
+  var syncFormControlMinsPlaceholders = function (formControlElement, value) {
+    formControlElement.min = value;
+    formControlElement.placeholder = value;
   };
 
   /** @description the hotel type form control synchronizes with the min.price in the price form control
     */
   var setPriceFormControlCustomValidity = function () {
-    if (priceInput.validity.rangeUnderflow) {
-      priceInput.setCustomValidity('Для типа жилья ' + HOTEL_TYPES_DICTIONARY[typeSelect.value] + ' минимальная цена ' + HOTEL_TYPES_MIN_PRICE[HOTEL_TYPES.indexOf(typeSelect.value)]);
-    } else if (priceInput.validity.rangeOverflow) {
-      priceInput.setCustomValidity('Максимально возможная цена 1 000 000');
+    if (priceInputElement.validity.rangeUnderflow) {
+      priceInputElement.setCustomValidity('Для типа жилья ' + HOTEL_TYPES_DICTIONARY[typeSelectElement.value] + ' минимальная цена ' + HOTEL_TYPES_MIN_PRICE[HOTEL_TYPES.indexOf(typeSelectElement.value)]);
+    } else if (priceInputElement.validity.rangeOverflow) {
+      priceInputElement.setCustomValidity('Максимально возможная цена 1 000 000');
     } else {
-      priceInput.setCustomValidity('');
+      priceInputElement.setCustomValidity('');
     }
   };
 
   /** @description available capacity form control options synchronizes with the room number form control
     */
   var setCapacityFormControlCustomValidity = function () {
-    var capacity = HOTEL_ROOM_NUMBER_CAPACITY[roomNumberSelect.value];
-    if (capacity.indexOf(capacitySelect.value) === -1) {
-      capacitySelect.setCustomValidity('Доступно только ' + HOTEL_ROOM_NUMBER_CAPACITY_DICTIONARY[roomNumberSelect.value]);
+    var capacity = HOTEL_ROOM_NUMBER_CAPACITY[roomNumberSelectElement.value];
+    if (capacity.indexOf(capacitySelectElement.value) === -1) {
+      capacitySelectElement.setCustomValidity('Доступно только ' + HOTEL_ROOM_NUMBER_CAPACITY_DICTIONARY[roomNumberSelectElement.value]);
     } else {
-      capacitySelect.setCustomValidity('');
+      capacitySelectElement.setCustomValidity('');
     }
   };
 
@@ -105,22 +104,22 @@
     syncFormControls(timeoutSelect, timeinSelect, CHECKIN_TIMES, CHECKOUT_TIMES, 'change', syncFormControlValues);
 
     // synchronizing hotel type and price form controls
-    syncFormControls(typeSelect, priceInput, HOTEL_TYPES, HOTEL_TYPES_MIN_PRICE, 'change', syncFormControlMinsPlaceholders);
+    syncFormControls(typeSelectElement, priceInputElement, HOTEL_TYPES, HOTEL_TYPES_MIN_PRICE, 'change', syncFormControlMinsPlaceholders);
 
-    priceInput.addEventListener('change', function () {
+    priceInputElement.addEventListener('change', function () {
       setPriceFormControlCustomValidity();
     });
 
-    typeSelect.addEventListener('change', function () {
+    typeSelectElement.addEventListener('change', function () {
       setPriceFormControlCustomValidity();
     });
 
     // synchronizing room number and capacity form controls
-    roomNumberSelect.addEventListener('change', function () {
+    roomNumberSelectElement.addEventListener('change', function () {
       setCapacityFormControlCustomValidity();
     });
 
-    capacitySelect.addEventListener('change', function () {
+    capacitySelectElement.addEventListener('change', function () {
       setCapacityFormControlCustomValidity();
     });
   };
@@ -132,41 +131,31 @@
   var advertisementFormSubmitHandler = function (evt) {
     evt.preventDefault();
 
-    window.backend.save(new FormData(advertisementForm), successFormSendHandler, window.backend.errorHandler);
+    window.backend.save(new FormData(advertisementFormElement), successFormSendHandler, window.backend.errorHandler);
   };
 
   /** @description handler for resetting advertisement form
     * @param {event} evt
     */
   var advertisementFormResetHandler = function () {
+    advertisementFormElement.removeEventListener('submit', advertisementFormSubmitHandler);
+    ResetButtonElement.removeEventListener('click', advertisementFormResetHandler);
+
     resetPage();
-
-    advertisementForm.removeEventListener('submit', advertisementFormSubmitHandler);
-    advertisementForm.removeEventListener('reset', advertisementFormResetHandler);
   };
 
-
-  /** @description resets map to initial state
+  /** @description fades map and forms
     */
-  var resetMap = function () {
-    var pins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
-    var card = document.querySelector('.map__card');
-
-    pins.forEach(function (element) {
-      element.remove();
-    });
-
-    card.remove();
-
-    mapSection.classList.add('map--faded');
+  var fadePage = function () {
+    mapSectionElement.classList.add('map--faded');
+    advertisementFormElement.classList.add('ad-form--disabled');
   };
+
   /** @description resets all forms to initial state
     */
   var resetForms = function () {
-    mapFiltersForm.reset();
-
-    advertisementForm.classList.add('ad-form--disabled');
-    advertisementForm.reset();
+    mapFiltersFormElement.reset();
+    advertisementFormElement.reset();
 
     disabledFormsElements.forEach(function (element) {
       element.disabled = true;
@@ -176,8 +165,8 @@
   /** @description resets main pin initial state
     */
   var resetMainPin = function () {
-    mapPinMain.style.left = PIN_MAIN_INITIAL_POSITION_LEFT + 'px';
-    mapPinMain.style.top = PIN_MAIN_INITIAL_POSITION_TOP + 'px';
+    mapPinMainElement.style.left = PIN_MAIN_INITIAL_POSITION_LEFT + 'px';
+    mapPinMainElement.style.top = PIN_MAIN_INITIAL_POSITION_TOP + 'px';
 
     window.map.getPinMainLocation();
   };
@@ -185,9 +174,10 @@
   /** @description resets page to initial state
     */
   var resetPage = function () {
-    resetMap();
+    window.map.resetMap();
     resetForms();
     resetMainPin();
+    fadePage();
   };
 
 
@@ -210,7 +200,7 @@
     };
 
     var documentEscPressHandler = function (evtSuccess) {
-      if (evtSuccess.keyCode === ESC_KEYCODE) {
+      if (window.util.isEscPressed(evtSuccess)) {
         successElement.remove();
         document.removeEventListener('click', documentClickHandler);
         document.removeEventListener('keydown', documentEscPressHandler);
@@ -220,8 +210,8 @@
     document.addEventListener('click', documentClickHandler);
     document.addEventListener('keydown', documentEscPressHandler);
 
-    advertisementForm.removeEventListener('submit', advertisementFormSubmitHandler);
-    advertisementForm.removeEventListener('reset', advertisementFormResetHandler);
+    advertisementFormElement.removeEventListener('submit', advertisementFormSubmitHandler);
+    ResetButtonElement.removeEventListener('click', advertisementFormResetHandler);
 
     resetPage();
   };

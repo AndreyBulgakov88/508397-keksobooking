@@ -1,24 +1,8 @@
 'use strict';
 
 (function () {
-  // functions for working with numbers and arrays
-
-  /** @description returns a random value from the range.
-    * @param {number} minValue the minimum value of the range.
-    * @param {number} maxValue the maximum value of the range.
-    * @return {number}
-    */
-  var getRandomNumber = function (minValue, maxValue) {
-    return Math.floor((maxValue + 1 - minValue) * Math.random() + minValue);
-  };
-
-  /** @description returns a random item from the arbitrary array.
-    * @param {array} array
-    * @return {any}
-    */
-  var getRandomItemFromArray = function (array) {
-    return array[getRandomNumber(0, array.length - 1)];
-  };
+  var ESC_KEYCODE = 27;
+  var ENTER_KEYCODE = 13;
 
   /** @description returns a random array of the definite length from initial array items.
     * @param {array} initialArray
@@ -47,9 +31,6 @@
     return resultArray;
   }
 
-
-  // functions for working with child nodes
-
   /** @description returns a document fragment with child nodes rendered from the array using the callback function
     * @param {array} array
     * @param {function} callback
@@ -65,21 +46,43 @@
   };
 
   /** @description removes all child nodes from the parent node
-    * @param {Node} parentNode
+    * @param {Node} parentNodeElement
     */
-  var removeChildNodes = function (parentNode) {
-    while (parentNode.lastChild) {
-      parentNode.removeChild(parentNode.lastChild);
+  var removeChildNodes = function (parentNodeElement) {
+    while (parentNodeElement.lastChild) {
+      parentNodeElement.removeChild(parentNodeElement.lastChild);
     }
   };
 
+  /** @description common debounce function
+    * @param {Function} callback
+    * @param {Number} debounceInterval
+    * @return {Function}
+    */
+  var debounce = function (callback, debounceInterval) {
+    var lastTimeout = null;
+
+    return function () {
+      var args = arguments;
+      if (lastTimeout) {
+        window.clearTimeout(lastTimeout);
+      }
+      lastTimeout = window.setTimeout(function () {
+        callback.apply(null, args);
+      }, debounceInterval);
+    };
+  };
 
   window.util = {
-    getRandomNumber: getRandomNumber,
-    getRandomItemFromArray: getRandomItemFromArray,
     getRandomValuesFromArray: getRandomValuesFromArray,
-    shuffleArray: shuffleArray,
     renderArrayToChildNodes: renderArrayToChildNodes,
-    removeChildNodes: removeChildNodes
+    removeChildNodes: removeChildNodes,
+    isEnterPressed: function (evt) {
+      return evt.keyCode === ENTER_KEYCODE;
+    },
+    isEscPressed: function (evt) {
+      return evt.keyCode === ESC_KEYCODE;
+    },
+    debounce: debounce
   };
 })();
