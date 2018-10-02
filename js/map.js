@@ -19,7 +19,6 @@
   var mapPinMainElement = document.querySelector('.map__pin--main');
   var addressInputElement = document.querySelector('#address');
 
-
   /** @description returns a data-id attribute from pin DOM element
     * @param {Node} element the pin DOM element.
     * @return {number}

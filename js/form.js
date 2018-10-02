@@ -2,29 +2,31 @@
 
 (function () {
   var HOTEL_TYPES = ['bungalo', 'flat', 'house', 'palace'];
-  var HOTEL_TYPES_MIN_PRICE = ['0', '1000', '5000', '10000'];
-  var HOTEL_TYPES_DICTIONARY = {
-    'bungalo': 'Бунгало',
-    'flat': 'Квартира',
-    'house': 'Дом',
-    'palace': 'Дворец'};
-
-  var HOTEL_ROOM_NUMBER_CAPACITY = {
-    '1': ['1'],
-    '2': ['1', '2'],
-    '3': ['1', '2', '3'],
-    '100': ['0']};
-  var HOTEL_ROOM_NUMBER_CAPACITY_DICTIONARY = {
-    '1': ['для одного гостя'],
-    '2': ['для одного гостя', ' для двух гостей'],
-    '3': ['для одного гостя', ' для двух гостей', ' для трех гостей'],
-    '100': ['не для гостей']};
+  var HOTEL_TYPES_MIN_PRICES = ['0', '1000', '5000', '10000'];
 
   var CHECKIN_TIMES = ['12:00', '13:00', '14:00'];
   var CHECKOUT_TIMES = ['12:00', '13:00', '14:00'];
 
   var PIN_MAIN_INITIAL_POSITION_LEFT = 570;
   var PIN_MAIN_INITIAL_POSITION_TOP = 375;
+
+  var HotelTypesDictionary = {
+    'bungalo': 'Бунгало',
+    'flat': 'Квартира',
+    'house': 'Дом',
+    'palace': 'Дворец'};
+
+  var HotelRoomNumberCapacity = {
+    '1': ['1'],
+    '2': ['1', '2'],
+    '3': ['1', '2', '3'],
+    '100': ['0']};
+
+  var HotelRoomNumberCapacityDictionary = {
+    '1': ['для одного гостя'],
+    '2': ['для одного гостя', ' для двух гостей'],
+    '3': ['для одного гостя', ' для двух гостей', ' для трех гостей'],
+    '100': ['не для гостей']};
 
   var advertisementFormElement = document.querySelector('.ad-form');
   var ResetButtonElement = document.querySelector('.ad-form__reset');
@@ -74,7 +76,7 @@
     */
   var setPriceFormControlCustomValidity = function () {
     if (priceInputElement.validity.rangeUnderflow) {
-      priceInputElement.setCustomValidity('Для типа жилья ' + HOTEL_TYPES_DICTIONARY[typeSelectElement.value] + ' минимальная цена ' + HOTEL_TYPES_MIN_PRICE[HOTEL_TYPES.indexOf(typeSelectElement.value)]);
+      priceInputElement.setCustomValidity('Для типа жилья ' + HotelTypesDictionary[typeSelectElement.value] + ' минимальная цена ' + HOTEL_TYPES_MIN_PRICES[HOTEL_TYPES.indexOf(typeSelectElement.value)]);
     } else if (priceInputElement.validity.rangeOverflow) {
       priceInputElement.setCustomValidity('Максимально возможная цена 1 000 000');
     } else {
@@ -85,9 +87,9 @@
   /** @description available capacity form control options synchronizes with the room number form control
     */
   var setCapacityFormControlCustomValidity = function () {
-    var capacity = HOTEL_ROOM_NUMBER_CAPACITY[roomNumberSelectElement.value];
+    var capacity = HotelRoomNumberCapacity[roomNumberSelectElement.value];
     if (capacity.indexOf(capacitySelectElement.value) === -1) {
-      capacitySelectElement.setCustomValidity('Доступно только ' + HOTEL_ROOM_NUMBER_CAPACITY_DICTIONARY[roomNumberSelectElement.value]);
+      capacitySelectElement.setCustomValidity('Доступно только ' + HotelRoomNumberCapacityDictionary[roomNumberSelectElement.value]);
     } else {
       capacitySelectElement.setCustomValidity('');
     }
@@ -104,7 +106,7 @@
     syncFormControls(timeoutSelect, timeinSelect, CHECKIN_TIMES, CHECKOUT_TIMES, 'change', syncFormControlValues);
 
     // synchronizing hotel type and price form controls
-    syncFormControls(typeSelectElement, priceInputElement, HOTEL_TYPES, HOTEL_TYPES_MIN_PRICE, 'change', syncFormControlMinsPlaceholders);
+    syncFormControls(typeSelectElement, priceInputElement, HOTEL_TYPES, HOTEL_TYPES_MIN_PRICES, 'change', syncFormControlMinsPlaceholders);
 
     priceInputElement.addEventListener('change', function () {
       setPriceFormControlCustomValidity();
@@ -191,12 +193,10 @@
     mainSectionElement.appendChild(successElement);
     successElement = document.querySelector('.success');
 
-    var documentClickHandler = function (evtSuccess) {
-      if (evtSuccess.target === successElement) {
-        successElement.remove();
-        document.removeEventListener('click', documentClickHandler);
-        document.removeEventListener('keydown', documentEscPressHandler);
-      }
+    var documentClickHandler = function () {
+      successElement.remove();
+      document.removeEventListener('click', documentClickHandler);
+      document.removeEventListener('keydown', documentEscPressHandler);
     };
 
     var documentEscPressHandler = function (evtSuccess) {
@@ -219,7 +219,7 @@
 
   window.form = {
     HOTEL_TYPES: HOTEL_TYPES,
-    HOTEL_TYPES_DICTIONARY: HOTEL_TYPES_DICTIONARY,
+    HotelTypesDictionary: HotelTypesDictionary,
     CHECKIN_TIMES: CHECKIN_TIMES,
     CHECKOUT_TIMES: CHECKOUT_TIMES,
     disabledFormsElements: disabledFormsElements,
