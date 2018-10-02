@@ -174,10 +174,10 @@
     */
   var getPinMainLocation = function (arrowActive) {
     var locationX = parseInt(mapPinMainElement.style.left, 10) + PIN_MAIN_WIDTH / 2;
-    var locationY = parseInt(mapPinMainElement.style.top, 10) + PIN_MAIN_HEIGHT / 2;
+    var locationY = parseInt(mapPinMainElement.style.top, 10);
 
-    if (arrowActive) {
-      locationY = locationY + PIN_MAIN_HEIGHT / 2 + PIN_MAIN_ARROW_HEIGHT;
+    if (!arrowActive) {
+      locationY = locationY - (PIN_MAIN_HEIGHT / 2 + PIN_MAIN_ARROW_HEIGHT);
     }
 
     addressInputElement.value = locationX + ', ' + locationY;

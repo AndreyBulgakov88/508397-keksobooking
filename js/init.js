@@ -65,8 +65,8 @@
 
       mapPinMainCoordX = Math.max(window.map.PIN_STARTING_COORD_X - window.map.PIN_MAIN_WIDTH / 2, mapPinMainCoordX);
       mapPinMainCoordX = Math.min(mapSectionElement.clientWidth - window.map.PIN_MAIN_WIDTH / 2, mapPinMainCoordX);
-      mapPinMainCoordY = Math.max(window.map.PIN_STARTING_COORD_Y - (window.map.PIN_MAIN_HEIGHT + window.map.PIN_MAIN_ARROW_HEIGHT), mapPinMainCoordY);
-      mapPinMainCoordY = Math.min(window.map.PIN_ENDING_COORD_Y - (window.map.PIN_MAIN_HEIGHT + window.map.PIN_MAIN_ARROW_HEIGHT), mapPinMainCoordY);
+      mapPinMainCoordY = Math.max(window.map.PIN_STARTING_COORD_Y, mapPinMainCoordY);
+      mapPinMainCoordY = Math.min(window.map.PIN_ENDING_COORD_Y, mapPinMainCoordY);
 
       mapPinMainElement.style.top = mapPinMainCoordY + 'px';
       mapPinMainElement.style.left = mapPinMainCoordX + 'px';
