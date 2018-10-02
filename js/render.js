@@ -4,7 +4,6 @@
 
   var mapSectionElement = document.querySelector('.map');
 
-
   /** @description returns a pin node rendered from the advertisement
     * @param {object} advertisement
     * @param {number} advertisementId
@@ -79,7 +78,7 @@
     cardElement.querySelector('.popup__title').textContent = advertisement.offer.title;
     cardElement.querySelector('.popup__text--address').textContent = advertisement.offer.address;
     cardElement.querySelector('.popup__text--price').textContent = advertisement.offer.price + '₽/ночь';
-    cardElement.querySelector('.popup__type').textContent = window.form.HOTEL_TYPES_DICTIONARY[advertisement.offer.type];
+    cardElement.querySelector('.popup__type').textContent = window.form.HotelTypesDictionary[advertisement.offer.type];
     cardElement.querySelector('.popup__text--capacity').textContent = advertisement.offer.rooms + ' комнаты для ' + advertisement.offer.guests + ' гостей';
     cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + advertisement.offer.checkin + ', выезд до ' + advertisement.offer.checkout;
 

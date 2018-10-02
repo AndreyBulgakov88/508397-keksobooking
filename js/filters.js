@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var FILTER_HOUSING_PRICE_DICTIONARY = {
+  var FilterHousingPriceDictionary = {
     'low': {
       minPrice: 0,
       maxPrice: 10000
@@ -49,8 +49,8 @@
     * @return {boolean}
     */
   var applyFilterHousingPrice = function (advertisement, filterFormElement) {
-    var minPrice = FILTER_HOUSING_PRICE_DICTIONARY[filterFormElement.value].minPrice;
-    var maxPrice = FILTER_HOUSING_PRICE_DICTIONARY[filterFormElement.value].maxPrice;
+    var minPrice = FilterHousingPriceDictionary[filterFormElement.value].minPrice;
+    var maxPrice = FilterHousingPriceDictionary[filterFormElement.value].maxPrice;
     return advertisement.offer.price >= minPrice && advertisement.offer.price <= maxPrice;
   };
 

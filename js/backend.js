@@ -78,12 +78,10 @@
     document.querySelector('main').appendChild(errorElement);
     errorElement = document.querySelector('.error');
 
-    var documentClickHandler = function (evt) {
-      if (evt.target === errorElement) {
-        errorElement.remove();
-        document.removeEventListener('click', documentClickHandler);
-        document.removeEventListener('keydown', documentEscPressHandler);
-      }
+    var documentClickHandler = function () {
+      errorElement.remove();
+      document.removeEventListener('click', documentClickHandler);
+      document.removeEventListener('keydown', documentEscPressHandler);
     };
 
     var documentEscPressHandler = function (evt) {
