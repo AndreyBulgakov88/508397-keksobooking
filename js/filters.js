@@ -16,6 +16,14 @@
     }
   };
 
+  var filterHousingTypeElement = document.querySelector('#housing-type');
+  var filterHousingPriceElement = document.querySelector('#housing-price');
+  var filterHousingRoomsElement = document.querySelector('#housing-rooms');
+  var filterHousingGuestsElement = document.querySelector('#housing-guests');
+
+  var mapFiltersElements = document.querySelectorAll('.map__filter');
+  var mapFeaturesElement = document.querySelector('.map__features');
+
   var filteredAdvertisements = [];
 
   /** @description common function for applying one map filter
@@ -90,18 +98,14 @@
   /** @description common function for filtering advertisements
     */
   var applyFilters = function () {
-    var filterHousingTypeElement = document.querySelector('#housing-type');
-    var filterHousingPriceElement = document.querySelector('#housing-price');
-    var filterHousingRoomsElement = document.querySelector('#housing-rooms');
-    var filterHousingGuestsElement = document.querySelector('#housing-guests');
-    var filterFeaturesElements = document.querySelectorAll('input[name=features]:checked');
-
     filteredAdvertisements = window.map.advertisementsAll;
 
     applyFilter(filterHousingTypeElement, applyFilterHousingType);
     applyFilter(filterHousingPriceElement, applyFilterHousingPrice);
     applyFilter(filterHousingRoomsElement, applyFilterHousingRooms);
     applyFilter(filterHousingGuestsElement, applyFilterHousingGuests);
+
+    var filterFeaturesElements = document.querySelectorAll('input[name=features]:checked');
     applyFilter(filterFeaturesElements, applyFilterFeatures);
 
     if (filteredAdvertisements.length >= window.map.MAX_RENDERED_ADVERTISEMENTS) {
@@ -125,9 +129,6 @@
     * @param {boolean} accessibility
     */
   var setFiltersAccessibility = function (accessibility) {
-    var mapFiltersElements = document.querySelectorAll('.map__filter');
-    var mapFeaturesElement = document.querySelector('.map__features');
-
     mapFiltersElements.forEach(function (element) {
       element.disabled = accessibility;
     });

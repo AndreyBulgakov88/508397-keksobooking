@@ -28,8 +28,9 @@
     '3': ['для одного гостя', ' для двух гостей', ' для трех гостей'],
     '100': ['не для гостей']};
 
+  var mainSectionElement = document.querySelector('main');
   var advertisementFormElement = document.querySelector('.ad-form');
-  var ResetButtonElement = document.querySelector('.ad-form__reset');
+  var resetButtonElement = document.querySelector('.ad-form__reset');
   var mapFiltersFormElement = document.querySelector('.map__filters');
   var mapSectionElement = document.querySelector('.map');
   var mapPinMainElement = document.querySelector('.map__pin--main');
@@ -38,8 +39,12 @@
   var capacitySelectElement = document.querySelector('#capacity');
   var typeSelectElement = document.querySelector('#type');
   var priceInputElement = document.querySelector('#price');
+  var timeinSelect = document.querySelector('#timein');
+  var timeoutSelect = document.querySelector('#timeout');
 
   var disabledFormsElements = document.querySelectorAll('[disabled]');
+
+  var successTemplate = document.querySelector('#success');
 
   /** @description a common function for synchronizing any two of form controls using the callback function
     * @param {Node} firstControlElement
@@ -99,9 +104,6 @@
     */
   var setupAdvertisementFormInputRestrictions = function () {
     // synchronizing timein and timeout form controls
-    var timeinSelect = document.querySelector('#timein');
-    var timeoutSelect = document.querySelector('#timeout');
-
     syncFormControls(timeinSelect, timeoutSelect, CHECKIN_TIMES, CHECKOUT_TIMES, 'change', syncFormControlValues);
     syncFormControls(timeoutSelect, timeinSelect, CHECKIN_TIMES, CHECKOUT_TIMES, 'change', syncFormControlValues);
 
@@ -141,7 +143,7 @@
     */
   var advertisementFormResetHandler = function () {
     advertisementFormElement.removeEventListener('submit', advertisementFormSubmitHandler);
-    ResetButtonElement.removeEventListener('click', advertisementFormResetHandler);
+    resetButtonElement.removeEventListener('click', advertisementFormResetHandler);
 
     resetPage();
   };
@@ -158,6 +160,8 @@
   var resetForms = function () {
     mapFiltersFormElement.reset();
     advertisementFormElement.reset();
+
+    syncFormControlMinsPlaceholders(priceInputElement, HOTEL_TYPES_MIN_PRICES[HOTEL_TYPES.indexOf(typeSelectElement.value)]);
 
     disabledFormsElements.forEach(function (element) {
       element.disabled = true;
@@ -186,9 +190,7 @@
   /** @description handler for successful sending form to server, showing success message and resetting page
     */
   var successFormSendHandler = function () {
-    var successTemplate = document.querySelector('#success');
     var successElement = successTemplate.content.cloneNode(true);
-    var mainSectionElement = document.querySelector('main');
 
     mainSectionElement.appendChild(successElement);
     successElement = document.querySelector('.success');
@@ -211,7 +213,7 @@
     document.addEventListener('keydown', documentEscPressHandler);
 
     advertisementFormElement.removeEventListener('submit', advertisementFormSubmitHandler);
-    ResetButtonElement.removeEventListener('click', advertisementFormResetHandler);
+    resetButtonElement.removeEventListener('click', advertisementFormResetHandler);
 
     resetPage();
   };

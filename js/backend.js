@@ -1,6 +1,9 @@
 'use strict';
 
 (function () {
+  var mainSectionElement = document.querySelector('main');
+  var errorTemplateElement = document.querySelector('#error').content;
+
   /** @description loads data from server
     * @param {function} onLoad  callback function, triggering when data successfully loads to server
     * @param {function} onError callback function, triggering when an error occured during loading to server
@@ -70,12 +73,11 @@
     * @param {object} errorMessage
     */
   var errorHandler = function (errorMessage) {
-    var errorTemplateElement = document.querySelector('#error').content;
     var errorElement = errorTemplateElement.cloneNode(true);
     var errorButtonElement = errorElement.querySelector('.error__button');
 
     errorElement.querySelector('.error__message').textContent = errorMessage;
-    document.querySelector('main').appendChild(errorElement);
+    mainSectionElement.appendChild(errorElement);
     errorElement = document.querySelector('.error');
 
     var documentClickHandler = function () {

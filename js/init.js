@@ -7,7 +7,7 @@
   var mapPinMainElement = document.querySelector('.map__pin--main');
   var mapFiltersFormElement = document.querySelector('.map__filters');
   var advertisementFormElement = document.querySelector('.ad-form');
-  var ResetButtonElement = document.querySelector('.ad-form__reset');
+  var resetButtonElement = document.querySelector('.ad-form__reset');
 
   /** @description the page activation function
     */
@@ -18,7 +18,7 @@
 
     advertisementFormElement.classList.remove('ad-form--disabled');
     advertisementFormElement.addEventListener('submit', window.form.advertisementFormSubmitHandler);
-    ResetButtonElement.addEventListener('click', window.form.advertisementFormResetHandler);
+    resetButtonElement.addEventListener('click', window.form.advertisementFormResetHandler);
 
     window.form.disabledFormsElements.forEach(function (element) {
       element.disabled = false;

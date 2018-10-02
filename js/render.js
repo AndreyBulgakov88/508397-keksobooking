@@ -3,6 +3,9 @@
 (function () {
 
   var mapSectionElement = document.querySelector('.map');
+  var mapFiltersContainerElement = document.querySelector('.map__filters-container');
+  var pinTemplateElement = document.querySelector('#pin').content;
+  var cardTemplateElement = document.querySelector('#card').content.querySelector('.map__card');
 
   /** @description returns a pin node rendered from the advertisement
     * @param {object} advertisement
@@ -10,7 +13,6 @@
     * @return {Node}
     */
   var renderPin = function (advertisement, advertisementId) {
-    var pinTemplateElement = document.querySelector('#pin').content;
     var pinElement = pinTemplateElement.cloneNode(true);
 
     pinElement.querySelector('.map__pin').style.left = advertisement.location.x - window.map.PIN_WIDTH / 2 + 'px';
@@ -62,9 +64,8 @@
   /** @description creates an empty offer card DOMElement
     */
   var makeEmptyCardElement = function () {
-    var cardTemplateElement = document.querySelector('#card').content.querySelector('.map__card');
     var cardElement = cardTemplateElement.cloneNode(true);
-    mapSectionElement.insertBefore(cardElement, document.querySelector('.map__filters-container'));
+    mapSectionElement.insertBefore(cardElement, mapFiltersContainerElement);
     cardElement.classList.add('hidden');
   };
 

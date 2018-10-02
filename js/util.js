@@ -19,7 +19,7 @@
     * @param {array} initialArray
     * @return {array}
     */
-  function shuffleArray(initialArray) {
+  var shuffleArray = function (initialArray) {
     var resultArray = initialArray.slice();
     for (var i = 0; i < resultArray.length; i++) {
       var j = Math.floor(Math.random() * (i + 1));
@@ -29,7 +29,7 @@
     }
 
     return resultArray;
-  }
+  };
 
   /** @description returns a document fragment with child nodes rendered from the array using the callback function
     * @param {array} array
